@@ -13,10 +13,10 @@ services:
     volumes:
       - .:/app
     command: >
-      bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+      bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
 
   db:
-    image: postgres:latest
+    image: postgres:17
     ports:
       - "5432:5432"
     env_file:

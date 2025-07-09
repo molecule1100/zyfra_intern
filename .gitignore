@@ -1,0 +1,14 @@
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+
+.venv/
+bin/
+lib/
+pyvenv.cfg
+
+.idea/
+
+.env

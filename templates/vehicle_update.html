@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование техники</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4">Редактирование техники</h2>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.reg_number.label_tag }}
+                    {{ form.reg_number }}
+                    {% if form.reg_number.errors %}
+                        <div class="text-danger">{{ form.reg_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.brand.label_tag }}
+                    {{ form.brand }}
+                    {% if form.brand.errors %}
+                        <div class="text-danger">{{ form.brand.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.type.label_tag }}
+                    {{ form.type }}
+                    {% if form.type.errors %}
+                        <div class="text-danger">{{ form.type.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.date_purchase.label_tag }}
+                    {{ form.date_purchase }}
+                    {% if form.date_purchase.errors %}
+                        <div class="text-danger">{{ form.date_purchase.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.mileage.label_tag }}
+                    {{ form.mileage }}
+                    {% if form.mileage.errors %}
+                        <div class="text-danger">{{ form.mileage.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.operation_status.label_tag }}
+                    {{ form.operation_status }}
+                    {% if form.operation_status.errors %}
+                        <div class="text-danger">{{ form.operation_status.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <h5 class="mt-4 mb-3">Фотографии</h5>
+        {{ formset.management_form }}
+
+        <div class="row">
+            {% for form in formset %}
+                <div class="col-md-6 mb-4">
+                    {% if form.instance.pk %}
+                        <div class="card">
+                            <img src="{{ form.instance.file.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label">Заменить фото:</label>
+                                    <input type="file" name="{{ form.file.name }}" class="form-control" accept="image/*">
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="{{ form.DELETE.name }}" class="form-check-input" id="{{ form.DELETE.id_for_label }}">
+                                    <label class="form-check-label text-danger" for="{{ form.DELETE.id_for_label }}">
+                                        Удалить фото
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card">
+                            <div class="card-body">
+                                <label class="form-label">Добавить новое фото:</label>
+                                <input type="file" name="{{ form.file.name }}" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if form.file.errors %}
+                        <div class="text-danger mt-2">{{ form.file.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            <a href="{% url 'vehicle_read' vehicle.pk %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

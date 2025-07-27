@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание запчасти</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4">Создание запчасти</h2>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+            {{ form.spare_part_type.label_tag }}
+            {{ form.spare_part_type }}
+            {% if form.spare_part_type.errors %}
+                <div class="text-danger">{{ form.spare_part_type.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.vehicle.label_tag }}
+            {{ form.vehicle }}
+            {% if form.vehicle.errors %}
+                <div class="text-danger">{{ form.vehicle.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.status.label_tag }}
+            {{ form.status }}
+            {% if form.status.errors %}
+                <div class="text-danger">{{ form.status.errors }}</div>
+            {% endif %}
+        </div>
+
+        <h5 class="mt-4 mb-3">Атрибуты</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th width="10%">Добавить</th>
+                        <th width="30%">Название</th>
+                        <th width="15%">Единица измерения</th>
+                        <th width="45%">Значение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attribute in attributes %}
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox" class="form-check-input"
+                                   name="attr_{{ attribute.id }}_selected">
+                        </td>
+                        <td>{{ attribute.name }}</td>
+                        <td>{{ attribute.unit|default:"-" }}</td>
+                        <td>
+                            <input type="text" class="form-control"
+                                   name="attr_{{ attribute.id }}_value"
+                                   placeholder="Введите значение">
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">Атрибуты отсутствуют</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h5 class="mt-4 mb-3">Фотографии</h5>
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <div class="mb-3">
+                <label class="form-label">Изображение {{ forloop.counter }}</label>
+                {{ form.file }}
+                {% if form.file.errors %}
+                    <div class="text-danger">{{ form.file.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>
+</body>
+</html>

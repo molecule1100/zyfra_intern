@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Список техники</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-5">
+  <h1 class="mb-4">Список техники</h1>
+
+  <table class="table table-hover table-bordered align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Бренд</th>
+        <th>Регистрационный номер</th>
+        <th>Пробег</th>
+        <th>Дата покупки</th>
+        <th>Статус</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vehicle in page_obj %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ vehicle.brand }}</td>
+          <td>{{ vehicle.reg_number }}</td>
+          <td>{{ vehicle.mileage }}</td>
+          <td>{{ vehicle.date_purchase }}</td>
+          <td>
+            <span class="badge
+              {% if vehicle.operation_status == 'В работе' %}bg-success
+              {% elif vehicle.operation_status == 'Простой' %}bg-warning text-dark
+              {% elif vehicle.operation_status == 'Ремонт' %}bg-danger
+              {% else %}bg-secondary{% endif %}">
+              {{ vehicle.operation_status }}
+            </span>
+          </td>
+          <td>
+            <form method="post" action="{% url 'vehicle_list_delete' %}" onsubmit="return confirm('Удалить технику?');">
+              {% csrf_token %}
+              <input type="hidden" name="pk" value="{{ vehicle.pk }}">
+              <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="7" class="text-center">Техника не найдена</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <nav>
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+        </li>
+      {% endif %}
+
+      <li class="page-item disabled">
+        <span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+      </li>
+
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперёд</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+</body>
+</html>

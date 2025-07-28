@@ -50,7 +50,7 @@ def list_delete_vehicle_type(request):
     return render(request, 'vehicle_type_list_delete.html', {'page_obj': page_obj})
 
 
-VehicleImageFormSet = modelformset_factory(VehicleImage, form=VehicleImageForm, extra=1, can_delete=False)
+VehicleImageFormSet = modelformset_factory(VehicleImage, form=VehicleImageForm, extra=1, can_delete=True)
 
 
 def create_vehicle(request):

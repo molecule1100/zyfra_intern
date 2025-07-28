@@ -1,77 +1,135 @@
-{% load static %}
+{% include "menu.html" %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>Список техники</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .filter-input {
+      max-width: 300px;
+    }
+    .deleted-true {
+      color: #dc3545;
+    }
+    .deleted-false {
+      color: #28a745;
+    }
+    .action-buttons {
+      white-space: nowrap;
+    }
+    .action-buttons .btn {
+      margin-right: 5px;
+    }
+    .action-buttons .btn:last-child {
+      margin-right: 0;
+    }
+  </style>
 </head>
-<body class="container py-5">
+<body class="container py-4">
   <h1 class="mb-4">Список техники</h1>
 
-  <table class="table table-hover table-bordered align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>#</th>
-        <th>Бренд</th>
-        <th>Регистрационный номер</th>
-        <th>Пробег</th>
-        <th>Дата покупки</th>
-        <th>Статус</th>
-        <th>Действия</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for vehicle in page_obj %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ vehicle.brand }}</td>
-          <td>{{ vehicle.reg_number }}</td>
-          <td>{{ vehicle.mileage }}</td>
-          <td>{{ vehicle.date_purchase }}</td>
-          <td>
-            <span class="badge
-              {% if vehicle.operation_status == 'В работе' %}bg-success
-              {% elif vehicle.operation_status == 'Простой' %}bg-warning text-dark
-              {% elif vehicle.operation_status == 'Ремонт' %}bg-danger
-              {% else %}bg-secondary{% endif %}">
-              {{ vehicle.operation_status }}
-            </span>
-          </td>
-          <td>
-            <form method="post" action="{% url 'vehicle_list_delete' %}" onsubmit="return confirm('Удалить технику?');">
-              {% csrf_token %}
-              <input type="hidden" name="pk" value="{{ vehicle.pk }}">
-              <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
-            </form>
-          </td>
-        </tr>
-      {% empty %}
-        <tr>
-          <td colspan="7" class="text-center">Техника не найдена</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="mb-4">
+    <label for="brandFilter" class="form-label">Фильтр по бренду</label>
+    <input type="text" class="form-control filter-input" id="brandFilter" placeholder="Например, TR">
+  </div>
 
-  <nav>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Рег. номер</th>
+          <th>Бренд</th>
+          <th>Тип</th>
+          <th>Пробег</th>
+          <th>Дата покупки</th>
+          <th>Статус</th>
+          <th>Удалено</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vehicle in page_obj %}
+          <tr>
+            <td>{{ vehicle.id }}</td>
+            <td>{{ vehicle.reg_number }}</td>
+            <td>{{ vehicle.brand }}</td>
+            <td>{{ vehicle.type }}</td>
+            <td>{{ vehicle.mileage }}</td>
+            <td>{{ vehicle.date_purchase|date:"d.m.Y" }}</td>
+            <td>
+              <span class="badge
+                {% if vehicle.operation_status == 'in_use' %}bg-success
+                {% elif vehicle.operation_status == 'idle' %}bg-warning text-dark
+                {% elif vehicle.operation_status == 'repair' %}bg-danger
+                {% else %}bg-secondary{% endif %}">
+                {{ vehicle.get_operation_status_display }}
+              </span>
+            </td>
+            <td>
+              <span class="{% if vehicle.is_deleted %}deleted-true{% else %}deleted-false{% endif %}">
+                {% if vehicle.is_deleted %}✔{% else %}✗{% endif %}
+              </span>
+            </td>
+            <td class="action-buttons">
+              <a href="{% url 'vehicle_read' vehicle.pk %}" class="btn btn-sm btn-outline-primary">Открыть</a>
+              <a href="{% url 'vehicle_update' vehicle.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+              <form method="post" action="{% url 'vehicle_list_delete' %}" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="pk" value="{{ vehicle.pk }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger"
+                  onclick="return confirm('Удалить технику?')">
+                  Удалить
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="9" class="text-center">Техника не найдена</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <nav aria-label="Page navigation">
     <ul class="pagination justify-content-center">
       {% if page_obj.has_previous %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
         </li>
       {% endif %}
 
-      <li class="page-item disabled">
-        <span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
-      </li>
+      {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+          <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+      {% endfor %}
 
       {% if page_obj.has_next %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперёд</a>
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
         </li>
       {% endif %}
     </ul>
   </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('brandFilter').addEventListener('input', function(e) {
+      const filter = e.target.value.toLowerCase();
+      const rows = document.querySelectorAll('tbody tr');
+
+      rows.forEach(row => {
+        if(row.querySelector('td')) {
+          const brand = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+          row.style.display = brand.includes(filter) ? '' : 'none';
+        }
+      });
+    });
+  </script>
 </body>
 </html>

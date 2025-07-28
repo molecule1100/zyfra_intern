@@ -17,7 +17,7 @@ class ReadUpdateVehicleTypeForm(forms.ModelForm):
 class CreateVehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
-        fields = ['reg_number', 'brand', 'type', 'mileage', 'operation_status']
+        fields = ['reg_number', 'brand', 'type', 'date_purchase', 'mileage', 'operation_status']
         widgets = {
             'operation_status': forms.Select(attrs={'class': 'form-select w-auto'}),
         }
@@ -30,6 +30,7 @@ class CreateVehicleForm(forms.ModelForm):
             'operation_status': 'Статус работы',
         }
 
+
 class VehicleImageForm(forms.ModelForm):
     class Meta:
         model = VehicleImage
@@ -39,7 +40,7 @@ class VehicleImageForm(forms.ModelForm):
 class UpdateVehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
-        fields = 'reg_number', 'brand', 'type', 'mileage', 'operation_status'
+        fields = 'reg_number', 'brand', 'type', 'date_purchase', 'mileage', 'operation_status'
         labels = {
             'reg_number': 'Регистрационный номер',
             'brand': 'Марка',

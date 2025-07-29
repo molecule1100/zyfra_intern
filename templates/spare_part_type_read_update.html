@@ -1,28 +1,87 @@
-{% load static %}
+{% include "menu.html" %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Редактирование типа запчасти</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 600px;
+            padding: 0;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-control-custom {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .form-control-custom:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .info-value {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.25rem;
+        }
+    </style>
 </head>
-<body>
-<div class="container mt-5">
-    <h2 class="mb-4">Редактирование типа запчасти</h2>
+<body class="p-4">
+    <div class="form-container">
+        <h1 class="mb-4">Редактирование типа запчасти</h1>
 
-    <form method="post" novalidate>
-        {% csrf_token %}
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Название типа запчасти</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="text-danger mt-1">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label class="form-label">Дата создания</label>
+                <div class="info-value">{{ spare_part_type.created_at|date:"Y-m-d H:i:s" }}</div>
+            </div>
 
-        <div class="mb-3">
-            {{ form.name.label_tag }}
-            {{ form.name }}
-            {% if form.name.errors %}
-                <div class="text-danger">{{ form.name.errors }}</div>
-            {% endif %}
-        </div>
+            <div class="form-group">
+                <label class="form-label">Дата обновления</label>
+                <div class="info-value">{{ spare_part_type.updated_at|date:"Y-m-d H:i:s" }}</div>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-    </form>
-</div>
+            <div class="form-group">
+                <label class="form-label">Удалено</label>
+                <div class="info-value">{% if spare_part_type.is_deleted %}Да{% else %}Нет{% endif %}</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-4 px-4 py-2">Сохранить</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

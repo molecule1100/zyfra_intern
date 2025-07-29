@@ -2,7 +2,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from .forms import CreateSparePartTypeForm, ReadUpdateSparePartTypeForm, CreateSparePartForm, SparePartImageForm, \
-    UpdateSparePartForm, AttributeForm, ReadUpdateAttributeForm
+    UpdateSparePartForm, CreateAttributeForm, ReadUpdateAttributeForm
 from .models import SparePartType, SparePart, SparePartImage, Attribute, AttributeValue
 from django.forms import modelformset_factory
 
@@ -50,7 +50,7 @@ def list_delete_spare_part_type(request):
     return render(request, 'spare_part_type_list_delete.html', {'page_obj': page_obj})
 
 
-SparePartImageFormSet = modelformset_factory(SparePartImage, form=SparePartImageForm, extra=1, can_delete=True)
+SparePartImageFormSet = modelformset_factory(SparePartImage, form=SparePartImageForm, extra=3, can_delete=True)
 
 
 def create_spare_part(request):
@@ -201,15 +201,15 @@ def list_delete_spare_part(request):
 
 def create_attribute(request):
     if request.method == 'POST':
-        form = AttributeForm(request.POST)
+        form = CreateAttributeForm(request.POST)
         if form.is_valid():
             attribute = form.save(commit=False)
             attribute.created_at = timezone.now()
             attribute.updated_at = timezone.now()
             attribute.save()
-            return redirect('spare_part_type_read_update', pk=attribute.pk)
+            return redirect('attribute_list_delete')
     else:
-        form = AttributeForm()
+        form = CreateAttributeForm()
 
     return render(request, 'attribute_create.html', {'form': form})
 
@@ -225,9 +225,10 @@ def read_update_attribute(request, pk):
             attribute.save()
             return redirect('attribute_read_update', pk=attribute.pk)
     else:
-        form = AttributeForm(instance=attribute)
+        form = CreateAttributeForm(instance=attribute)
 
     return render(request, 'attribute_read_update.html', {'attribute': attribute,'form': form})
+
 
 def list_delete_attribute(request):
     attribute_list = Attribute.objects.all()

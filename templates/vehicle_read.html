@@ -52,6 +52,22 @@
     h1 {
       margin-left: -5px;
     }
+    .status-installed {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status-instock {
+      background-color: #cce5ff;
+      color: #004085;
+    }
+    .status-repair {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    .status-awaiting {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
   </style>
 </head>
 <body class="p-4">
@@ -130,9 +146,29 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td colspan="5" class="text-center">Нет данных о запчастях</td>
-        </tr>
+        {% for part in vehicle.sparepart_set.all %}
+          <tr>
+            <td>{{ part.id }}</td>
+            <td>{{ part.spare_part_type.name }}</td>
+            <td>
+              <span class="badge status-badge
+                {% if part.status == 'Установлено' %}status-installed
+                {% elif part.status == 'На складе' %}status-instock
+                {% elif part.status == 'В ремонте' %}status-repair
+                {% elif part.status == 'Ожидает ремонт' %}status-awaiting{% endif %}">
+                {{ part.status }}
+              </span>
+            </td>
+            <td>{{ part.created_at|date:"Y-m-d" }}</td>
+            <td>
+              <a href="{% url 'spare_part_read' part.pk %}" class="btn btn-sm btn-outline-primary">Открыть</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">Нет данных о запчастях</td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

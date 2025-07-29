@@ -32,7 +32,7 @@ class UpdateSparePartForm(forms.ModelForm):
         fields = ['spare_part_type', 'vehicle', 'status']
 
 
-class AttributeForm(forms.ModelForm):
+class CreateAttributeForm(forms.ModelForm):
     class Meta:
         model = Attribute
         fields = ['name', 'unit', 'data_type']

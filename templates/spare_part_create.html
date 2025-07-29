@@ -1,91 +1,134 @@
-{% load static %}
+{% include "menu.html" %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Создание запчасти</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .container {
+            padding: 0;
+            max-width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        .form-section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .table-attributes {
+            width: 100%;
+            max-width: 600px;
+        }
+        .table-attributes th {
+            text-align: left;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 500;
+        }
+        .table-attributes td {
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        .example-text {
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .file-status {
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .form-control, .form-select {
+            max-width: 400px;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h2 class="mb-4">Создание запчасти</h2>
+    <div class="container">
+        <h1>Создание запчасти</h1>
 
-    <form method="post" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
-
-        <div class="mb-3">
-            {{ form.spare_part_type.label_tag }}
-            {{ form.spare_part_type }}
-            {% if form.spare_part_type.errors %}
-                <div class="text-danger">{{ form.spare_part_type.errors }}</div>
-            {% endif %}
-        </div>
-
-        <div class="mb-3">
-            {{ form.vehicle.label_tag }}
-            {{ form.vehicle }}
-            {% if form.vehicle.errors %}
-                <div class="text-danger">{{ form.vehicle.errors }}</div>
-            {% endif %}
-        </div>
-
-        <div class="mb-3">
-            {{ form.status.label_tag }}
-            {{ form.status }}
-            {% if form.status.errors %}
-                <div class="text-danger">{{ form.status.errors }}</div>
-            {% endif %}
-        </div>
-
-        <h5 class="mt-4 mb-3">Атрибуты</h5>
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-light">
-                    <tr>
-                        <th width="10%">Добавить</th>
-                        <th width="30%">Название</th>
-                        <th width="15%">Единица измерения</th>
-                        <th width="45%">Значение</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for attribute in attributes %}
-                    <tr>
-                        <td class="text-center">
-                            <input type="checkbox" class="form-check-input"
-                                   name="attr_{{ attribute.id }}_selected">
-                        </td>
-                        <td>{{ attribute.name }}</td>
-                        <td>{{ attribute.unit|default:"-" }}</td>
-                        <td>
-                            <input type="text" class="form-control"
-                                   name="attr_{{ attribute.id }}_value"
-                                   placeholder="Введите значение">
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">Атрибуты отсутствуют</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <h5 class="mt-4 mb-3">Фотографии</h5>
-        {{ formset.management_form }}
-        {% for form in formset %}
-            <div class="mb-3">
-                <label class="form-label">Изображение {{ forloop.counter }}</label>
-                {{ form.file }}
-                {% if form.file.errors %}
-                    <div class="text-danger">{{ form.file.errors }}</div>
-                {% endif %}
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <div class="form-section">
+                <div class="section-title">Тип запчасти</div>
+                {{ form.spare_part_type }}
             </div>
-        {% endfor %}
+            <div class="form-section">
+                <div class="section-title">Закрепить за техникой</div>
+                {{ form.vehicle }}
+            </div>
+            <div class="form-section">
+                <div class="section-title">Статус</div>
+                {{ form.status }}
+            </div>
+            <div class="form-section">
+                <div class="section-title">Атрибуты</div>
+                <table class="table-attributes">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Значение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attribute in attributes %}
+                        <tr>
+                            <td>{{ attribute.name }}{% if attribute.unit %} ({{ attribute.unit }}){% endif %}</td>
+                            <td>
+                                <input type="text" name="attr_{{ attribute.id }}_value" class="form-control form-control-sm">
+                                <div class="example-text">
+                                    {% if attribute.unit == 'мм' %}
+                                    {% elif attribute.unit == 'кг' %}
+                                    {% endif %}
+                                </div>
+                                <input type="hidden" name="attr_{{ attribute.id }}_selected" value="on">
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">Нет доступных атрибутов</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-section">
+                <div class="section-title">Фотографии</div>
+                {{ formset.management_form }}
+                {% for form in formset|slice:":3" %}
+                <div class="mb-3">
+                    <input type="file" name="{{ form.prefix }}-file" class="form-control form-control-sm" style="max-width: 400px;">
+                    <div class="file-status">Файл не выбран</div>
+                </div>
+                {% endfor %}
+            </div>
 
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-    </form>
-</div>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const status = this.nextElementSibling;
+                status.textContent = this.files.length > 0 ? this.files[0].name : 'Файл не выбран';
+            });
+        });
+    </script>
 </body>
 </html>

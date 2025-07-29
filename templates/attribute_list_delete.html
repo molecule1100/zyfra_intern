@@ -1,76 +1,135 @@
-{% load static %}
+{% include "menu.html" %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Список атрибутов</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Список атрибутов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 100%;
+            padding: 0;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .attributes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .attributes-table th,
+        .attributes-table td {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+        .attributes-table th {
+            background-color: #f2f2f2;
+            font-weight: 500;
+        }
+        .deleted-icon {
+            font-weight: bold;
+        }
+        .deleted-yes {
+            color: #28a745;
+        }
+        .deleted-no {
+            color: #dc3545;
+        }
+        .action-btn {
+            padding: 5px 10px;
+            margin-right: 5px;
+            font-size: 14px;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+        .pagination .page-item {
+            margin: 0 5px;
+        }
+    </style>
 </head>
-<body class="container py-5">
-  <h1 class="mb-4">Список атрибутов</h1>
-  <table class="table table-hover table-bordered align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>#</th>
-        <th>Название</th>
-        <th>Единица измерения</th>
-        <th>Тип данных</th>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Список атрибутов</h1>
 
-        <th>Дата создания</th>
-        <th>Дата обновления</th>
-        <th>Действия</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for attribute in page_obj %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ attribute.name }}</td>
-          <td>{{ attribute.unit }}</td>
-          <td>
-            <span class="badge
-              {% if attribute.data_type == 'string' %}bg-primary
-              {% elif attribute.data_type == 'number' %}bg-success
-              {% elif attribute.data_type == 'boolean' %}bg-warning text-dark
-              {% elif attribute.data_type == 'date' %}bg-info
-              {% else %}bg-secondary{% endif %}">
-              {{ attribute.data_type }}
-            </span>
-          </td>
+        <div class="table-responsive">
+            <table class="attributes-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Единица</th>
+                        <th>Тип данных</th>
+                        <th>Дата создания</th>
+                        <th>Обновлён</th>
+                        <th>Удален</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attribute in page_obj %}
+                    <tr>
+                        <td>{{ attribute.id }}</td>
+                        <td>{{ attribute.name }}</td>
+                        <td>{{ attribute.unit }}</td>
+                        <td>{{ attribute.data_type }}</td>
+                        <td>{{ attribute.created_at|date:"Y-m-d" }}</td>
+                        <td>{{ attribute.updated_at|date:"Y-m-d" }}</td>
+                        <td>
+                            <span class="deleted-icon {% if attribute.is_deleted %}deleted-yes{% else %}deleted-no{% endif %}">
+                                {% if attribute.is_deleted %}✔{% else %}✕{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'attribute_read_update' attribute.pk %}" class="btn btn-sm btn-outline-primary action-btn">Редактировать</a>
+                            {% if not attribute.is_deleted %}
+                                <form method="post" action="{% url 'attribute_list_delete' %}" onsubmit="return confirm('Удалить атрибут?');" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="pk" value="{{ attribute.pk }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger action-btn">Удалить</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center">Атрибуты не найдены</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-          <td>{{ attribute.created_at|date:"d.m.Y H:i" }}</td>
-          <td>{{ attribute.updated_at|date:"d.m.Y H:i" }}</td>
-          <td>
-            <form method="post" action="{% url 'attribute_list_delete' %}" onsubmit="return confirm('Удалить атрибут?');">
-              {% csrf_token %}
-              <input type="hidden" name="pk" value="{{ attribute.pk }}">
-              <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
-            </form>
-          </td>
-        </tr>
-      {% empty %}
-        <tr>
-          <td colspan="7" class="text-center">Атрибуты не найдены</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <nav>
-    <ul class="pagination justify-content-center">
-      {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
-        </li>
-      {% endif %}
-      <li class="page-item disabled">
-        <span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
-      </li>
-      {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперёд</a>
-        </li>
-      {% endif %}
-    </ul>
-  </nav>
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

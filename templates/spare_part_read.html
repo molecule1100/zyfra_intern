@@ -1,79 +1,169 @@
+{% include "menu.html" %}
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>{{ spare_part.spare_part_type }} — Просмотр</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            padding: 0;
+            max-width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        h2 {
+            font-size: 20px;
+            margin: 25px 0 15px 0;
+            font-weight: 500;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        .info-table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .info-table th, .info-table td {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+            vertical-align: top;
+        }
+        .info-table th {
+            width: 150px;
+            background-color: #f8f9fa;
+            font-weight: 500;
+        }
+        .attributes-table {
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .attributes-table th, .attributes-table td {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+        .attributes-table th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+        }
+        .photos-section {
+            margin-bottom: 25px;
+        }
+        .photo-thumbnail {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-right: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+        }
+        .log-entry {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        .log-date {
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        .deleted-status {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .vehicle-link {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        .vehicle-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<body class="p-4 bg-light">
+<body>
+    <div class="container">
+        <h1>Информация о запчасти</h1>
 
-<div class="container">
-    <h1 class="mb-4">Информация о запчасти</h1>
-
-    <table class="table table-bordered">
-        <tr>
-            <th>Тип запчасти</th>
-            <td>{{ spare_part.spare_part_type }}</td>
-        </tr>
-        <tr>
-            <th>Техника</th>
-            <td>
-                <a href="{% url 'vehicle_read' spare_part.vehicle.pk %}" class="btn btn-outline-primary btn-sm">
-                    {{ spare_part.vehicle.brand }} ({{ spare_part.vehicle.reg_number }})
-                </a>
-            </td>
-        </tr>
-        <tr>
-            <th>Статус</th>
-            <td>{{ spare_part.status }}</td>
-        </tr>
-        <tr>
-            <th>Дата создания</th>
-            <td>{{ spare_part.created_at|date:"d.m.Y H:i" }}</td>
-        </tr>
-        <tr>
-            <th>Дата обновления</th>
-            <td>{{ spare_part.updated_at|date:"d.m.Y H:i" }}</td>
-        </tr>
-    </table>
-
-    {% if attribute_values %}
-    <h3 class="mt-4">Атрибуты</h3>
-    <table class="table table-bordered">
-        <thead>
+        <table class="info-table">
             <tr>
-                <th>Название</th>
-                <th>Единица измерения</th>
-                <th>Значение</th>
+                <th>Тип запчасти</th>
+                <td>{{ spare_part.spare_part_type }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for attr_value in attribute_values %}
             <tr>
-                <td>{{ attr_value.attribute.name }}</td>
-                <td>{{ attr_value.attribute.unit|default:"-" }}</td>
-                <td>{{ attr_value.value }}</td>
+                <th>Техника</th>
+                <td>
+                    <a href="{% url 'vehicle_read' spare_part.vehicle.pk %}" class="vehicle-link">
+                        {{ spare_part.vehicle.brand }} {{ spare_part.vehicle.reg_number }}
+                    </a>
+                </td>
             </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+            <tr>
+                <th>Статус</th>
+                <td>{{ spare_part.status }}</td>
+            </tr>
+            <tr>
+                <th>Создано</th>
+                <td>{{ spare_part.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            <tr>
+                <th>Обновлено</th>
+                <td>{{ spare_part.updated_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            <tr>
+                <th>Удалено</th>
+                <td class="deleted-status">{% if spare_part.is_deleted %}✔{% else %}✗{% endif %}</td>
+            </tr>
+        </table>
 
-    <h3 class="mt-5">Фотографии</h3>
-    <div class="row">
-        {% for image in images %}
-        <div class="col-md-3 mb-3">
-            <img src="{{ image.file.url }}" class="img-fluid rounded border" alt="Фото">
+        {% if attribute_values %}
+        <h2>Атрибуты</h2>
+        <table class="attributes-table">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Значение</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attr_value in attribute_values %}
+                <tr>
+                    <td>{{ attr_value.attribute.name }}{% if attr_value.attribute.unit %} ({{ attr_value.attribute.unit }}){% endif %}</td>
+                    <td>{{ attr_value.value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <h2>Фотографии</h2>
+        <div class="photos-section">
+            {% if images %}
+            <div style="font-weight: 500; margin-bottom: 10px;"></div>
+            <div>
+                {% for image in images %}
+                <img src="{{ image.file.url }}" class="photo-thumbnail" alt="Фото запчасти">
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>Фотографии отсутствуют.</p>
+            {% endif %}
         </div>
-        {% empty %}
-        <p>Фотографии отсутствуют.</p>
-        {% endfor %}
+        <div style="margin-top: 30px;">
+            <a href="{% url 'spare_part_list_delete' %}" class="btn btn-secondary">К списку</a>
+        </div>
     </div>
-
-    <div class="mt-4">
-        <a href="{% url 'spare_part_list_delete' %}" class="btn btn-secondary">К списку</a>
-    </div>
-</div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

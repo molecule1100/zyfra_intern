@@ -33,7 +33,7 @@ class Vehicle(models.Model):
 
 
 class VehicleImage(models.Model):
-    file = ImageField(upload_to='vehicle/images/', blank=True, null=True)
+    file = ImageField(upload_to='frontend/vehicle/images/', blank=True, null=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()

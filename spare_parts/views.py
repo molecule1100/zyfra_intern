@@ -113,7 +113,7 @@ def read_spare_part(request, pk):
                                                      is_deleted=False).select_related('attribute')
 
     return render(request, 'spare_part_read.html',
-                  {'spare_part': spare_part, 'images': images, 'attribute_values': attribute_values})
+                  {'spare_part': spare_part, 'frontend': images, 'attribute_values': attribute_values})
 
 
 def update_spare_part(request, pk):

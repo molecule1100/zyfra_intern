@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='vehicleimage',
             name='file',
-            field=sorl.thumbnail.fields.ImageField(blank=True, null=True, upload_to='vehicle/images/'),
+            field=sorl.thumbnail.fields.ImageField(blank=True, null=True, upload_to='vehicle/frontend/'),
         ),
     ]

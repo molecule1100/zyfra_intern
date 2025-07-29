@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
             name='VehicleImage',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', sorl.thumbnail.fields.ImageField(blank=True, null=True, upload_to='vehicle/images/')),
+                ('file', sorl.thumbnail.fields.ImageField(blank=True, null=True, upload_to='vehicle/frontend/')),
                 ('created_at', models.DateTimeField()),
                 ('updated_at', models.DateTimeField()),
                 ('is_deleted', models.BooleanField()),

@@ -88,7 +88,7 @@ def create_vehicle(request):
 def read_vehicle(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk, is_deleted=False)
     images = VehicleImage.objects.filter(vehicle=vehicle, is_deleted=False)
-    return render(request, 'vehicle_read.html', {'vehicle': vehicle, 'images': images})
+    return render(request, 'vehicle_read.html', {'vehicle': vehicle, 'frontend': images})
 
 
 def list_delete_vehicle(request):

@@ -196,7 +196,7 @@ def list_delete_spare_part(request):
         spare_part = SparePart.objects.get(pk=pk)
         spare_part.delete()
 
-    return render(request, 'spare_part_list_delete.html', {'page_obj': page_obj})
+    return render(request, 'spare_part_list_delete.js.html', {'page_obj': page_obj})
 
 
 def create_attribute(request):

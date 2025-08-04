@@ -1,11 +1,9 @@
-{% include "menu.html" %}
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Список атрибутов</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             padding: 20px;
@@ -57,6 +55,8 @@
     </style>
 </head>
 <body>
+    <div id="menu-container"></div>
+
     <div class="container">
         <h1 class="mb-4">Список атрибутов</h1>
 
@@ -75,61 +75,77 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for attribute in page_obj %}
                     <tr>
-                        <td>{{ attribute.id }}</td>
-                        <td>{{ attribute.name }}</td>
-                        <td>{{ attribute.unit }}</td>
-                        <td>{{ attribute.data_type }}</td>
-                        <td>{{ attribute.created_at|date:"Y-m-d" }}</td>
-                        <td>{{ attribute.updated_at|date:"Y-m-d" }}</td>
+                        <td>1</td>
+                        <td>Размер</td>
+                        <td>мм</td>
+                        <td>Число</td>
+                        <td>2023-05-15</td>
+                        <td>2023-06-10</td>
                         <td>
-                            <span class="deleted-icon {% if attribute.is_deleted %}deleted-yes{% else %}deleted-no{% endif %}">
-                                {% if attribute.is_deleted %}✔{% else %}✕{% endif %}
-                            </span>
+                            <span class="deleted-icon deleted-no">✕</span>
                         </td>
                         <td>
-                            <a href="{% url 'attribute_read_update' attribute.pk %}" class="btn btn-sm btn-outline-primary action-btn">Редактировать</a>
-                            {% if not attribute.is_deleted %}
-                                <form method="post" action="{% url 'attribute_list_delete' %}" onsubmit="return confirm('Удалить атрибут?');" style="display: inline;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="pk" value="{{ attribute.pk }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger action-btn">Удалить</button>
-                                </form>
-                            {% endif %}
+                            <a href="#" class="btn btn-sm btn-outline-primary action-btn">Редактировать</a>
+                            <a href="#" class="btn btn-sm btn-outline-danger action-btn" onclick="return confirmDelete('Размер')">Удалить</a>
                         </td>
                     </tr>
-                    {% empty %}
                     <tr>
-                        <td colspan="8" class="text-center">Атрибуты не найдены</td>
+                        <td>2</td>
+                        <td>Материал</td>
+                        <td>-</td>
+                        <td>Текст</td>
+                        <td>2023-06-20</td>
+                        <td>2023-06-20</td>
+                        <td>
+                            <span class="deleted-icon deleted-yes">✔</span>
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-primary action-btn">Редактировать</a>
+                        </td>
                     </tr>
-                    {% endfor %}
+                    <tr>
+                        <td>3</td>
+                        <td>Вес</td>
+                        <td>кг</td>
+                        <td>Число</td>
+                        <td>2023-07-05</td>
+                        <td>2023-07-15</td>
+                        <td>
+                            <span class="deleted-icon deleted-no">✕</span>
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-primary action-btn">Редактировать</a>
+                            <a href="#" class="btn btn-sm btn-outline-danger action-btn" onclick="return confirmDelete('Вес')">Удалить</a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
         <nav>
             <ul class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
-                    </li>
-                {% endif %}
-
-                {% for num in page_obj.paginator.page_range %}
-                    <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
-                    </li>
-                {% endif %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Предыдущая</a>
+                </li>
+                <li class="page-item active">
+                    <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Следующая</a>
+                </li>
             </ul>
         </nav>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/menu.js"></script>
+    <script src="../js/attribute_list_delete.js"></script>
 </body>
 </html>

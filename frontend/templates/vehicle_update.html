@@ -1,5 +1,3 @@
-{% include "menu.html" %}
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -79,112 +77,96 @@
     </style>
 </head>
 <body>
-<div class="container-fluid">
+  <div id="menu-container"></div>
+
+  <div class="container-fluid">
     <div class="form-container">
         <h2 class="mb-4">Редактирование техники</h2>
 
         <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ formset.management_form }}
-
             <div class="form-group">
                 <label class="form-label">Регистрационный номер</label>
-                <input type="text" name="reg_number" value="{{ form.reg_number.value|default:'' }}" class="form-control">
-                {% if form.reg_number.errors %}
-                    <div class="text-danger small">{{ form.reg_number.errors }}</div>
-                {% endif %}
+                <input type="text" name="reg_number" value="А123БВ77" class="form-control">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Марка</label>
-                <input type="text" name="brand" value="{{ form.brand.value|default:'' }}" class="form-control">
-                {% if form.brand.errors %}
-                    <div class="text-danger small">{{ form.brand.errors }}</div>
-                {% endif %}
+                <input type="text" name="brand" value="Трактор" class="form-control">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Дата покупки</label>
-                <input type="date" name="date_purchase" value="{{ form.date_purchase.value|date:'Y-m-d' }}" class="form-control">
-                {% if form.date_purchase.errors %}
-                    <div class="text-danger small">{{ form.date_purchase.errors }}</div>
-                {% endif %}
+                <input type="date" name="date_purchase" value="2022-05-15" class="form-control">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Тип техники</label>
                 <select name="type" class="form-select">
-                    {% for value, label in form.type.field.choices %}
-                        <option value="{{ value }}" {% if form.type.value == value %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
+                    <option value="tractor" selected>Трактор</option>
+                    <option value="excavator">Экскаватор</option>
+                    <option value="bulldozer">Бульдозер</option>
+                    <option value="crane">Кран</option>
                 </select>
-                {% if form.type.errors %}
-                    <div class="text-danger small">{{ form.type.errors }}</div>
-                {% endif %}
             </div>
 
             <div class="form-group">
                 <label class="form-label">Пробег</label>
-                <input type="number" name="mileage" value="{{ form.mileage.value|default:'' }}" class="form-control">
-                {% if form.mileage.errors %}
-                    <div class="text-danger small">{{ form.mileage.errors }}</div>
-                {% endif %}
+                <input type="number" name="mileage" value="15000" class="form-control">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Статус работы</label>
                 <select name="operation_status" class="form-select">
-                    {% for value, label in form.operation_status.field.choices %}
-                        <option value="{{ value }}" {% if form.operation_status.value == value %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
+                    <option value="in_use" selected>В работе</option>
+                    <option value="idle">Простой</option>
+                    <option value="repair">В ремонте</option>
+                    <option value="written_off">Списана</option>
                 </select>
-                {% if form.operation_status.errors %}
-                    <div class="text-danger small">{{ form.operation_status.errors }}</div>
-                {% endif %}
             </div>
 
             <div class="photo-section">
                 <h5 class="section-title">Текущие фотографии</h5>
                 <div class="current-photos">
-                    {% for form in formset %}
-                        {% if form.instance.pk %}
-                            <div class="photo-card">
-                                {% if form.instance.file %}
-                                    <img src="{{ form.instance.file.url }}" class="photo-img" alt="Фото техники">
-                                {% endif %}
-                                <div class="delete-checkbox">
-                                    <input type="checkbox" name="{{ form.prefix }}-DELETE" id="{{ form.prefix }}-DELETE" {% if form.DELETE.value %}checked{% endif %}>
-                                    <label for="{{ form.prefix }}-DELETE">Удалить</label>
-                                    <input type="hidden" name="{{ form.prefix }}-id" value="{{ form.instance.id }}">
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% empty %}
-                        <p class="text-muted">Нет загруженных фотографий</p>
-                    {% endfor %}
+                    <div class="photo-card">
+                        <img src="tractor_photo1.jpg" class="photo-img" alt="Фото трактора">
+                        <div class="delete-checkbox">
+                            <input type="checkbox" name="photo-1-DELETE" id="photo-1-DELETE">
+                            <label for="photo-1-DELETE">Удалить</label>
+                            <input type="hidden" name="photo-1-id" value="1">
+                        </div>
+                    </div>
+                    <div class="photo-card">
+                        <img src="tractor_photo2.jpg" class="photo-img" alt="Фото трактора">
+                        <div class="delete-checkbox">
+                            <input type="checkbox" name="photo-2-DELETE" id="photo-2-DELETE">
+                            <label for="photo-2-DELETE">Удалить</label>
+                            <input type="hidden" name="photo-2-id" value="2">
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="photo-section">
                 <h5 class="section-title">Добавить новые фото</h5>
-                {% for form in formset %}
-                    {% if not form.instance.pk %}
-                        <div class="file-input-container">
-                            <label class="form-label">Выбрать файл</label>
-                            <input type="file" name="{{ form.prefix }}-file" class="form-control">
-                        </div>
-                    {% endif %}
-                {% endfor %}
+                <div class="file-input-container">
+                    <label class="form-label">Выбрать файл</label>
+                    <input type="file" name="photo-3-file" class="form-control">
+                </div>
+                <div class="file-input-container">
+                    <label class="form-label">Выбрать файл</label>
+                    <input type="file" name="photo-4-file" class="form-control">
+                </div>
             </div>
 
             <div class="mt-5">
                 <button type="submit" class="btn btn-primary btn-save">Сохранить изменения</button>
-                <a href="{% url 'vehicle_read' vehicle.pk %}" class="btn btn-outline-secondary ms-2">Отмена</a>
+                <a href="#" class="btn btn-outline-secondary ms-2">Отмена</a>
             </div>
         </form>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/menu.js"></script>
 </body>
 </html>

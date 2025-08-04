@@ -1,10 +1,8 @@
-{% include "menu.html" %}
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>{{ spare_part.spare_part_type }} — Просмотр</title>
+    <title>Тип запчасти — Просмотр</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -93,41 +91,41 @@
     </style>
 </head>
 <body>
+    <div id="menu-container"></div>
     <div class="container">
         <h1>Информация о запчасти</h1>
 
         <table class="info-table">
             <tr>
                 <th>Тип запчасти</th>
-                <td>{{ spare_part.spare_part_type }}</td>
+                <td>Пример типа запчасти</td>
             </tr>
             <tr>
                 <th>Техника</th>
                 <td>
-                    <a href="{% url 'vehicle_read' spare_part.vehicle.pk %}" class="vehicle-link">
-                        {{ spare_part.vehicle.brand }} {{ spare_part.vehicle.reg_number }}
+                    <a href="#" class="vehicle-link">
+                        Пример марки ABC123
                     </a>
                 </td>
             </tr>
             <tr>
                 <th>Статус</th>
-                <td>{{ spare_part.status }}</td>
+                <td>Пример статуса</td>
             </tr>
             <tr>
                 <th>Создано</th>
-                <td>{{ spare_part.created_at|date:"Y-m-d H:i" }}</td>
+                <td>2023-01-01 12:00</td>
             </tr>
             <tr>
                 <th>Обновлено</th>
-                <td>{{ spare_part.updated_at|date:"Y-m-d H:i" }}</td>
+                <td>2023-01-02 14:30</td>
             </tr>
             <tr>
                 <th>Удалено</th>
-                <td class="deleted-status">{% if spare_part.is_deleted %}✔{% else %}✗{% endif %}</td>
+                <td class="deleted-status">✗</td>
             </tr>
         </table>
 
-        {% if attribute_values %}
         <h2>Атрибуты</h2>
         <table class="attributes-table">
             <thead>
@@ -137,33 +135,30 @@
                 </tr>
             </thead>
             <tbody>
-                {% for attr_value in attribute_values %}
                 <tr>
-                    <td>{{ attr_value.attribute.name }}{% if attr_value.attribute.unit %} ({{ attr_value.attribute.unit }}){% endif %}</td>
-                    <td>{{ attr_value.value }}</td>
+                    <td>Пример атрибута 1 (ед.изм.)</td>
+                    <td>Значение 1</td>
                 </tr>
-                {% endfor %}
+                <tr>
+                    <td>Пример атрибута 2</td>
+                    <td>Значение 2</td>
+                </tr>
             </tbody>
         </table>
-        {% endif %}
 
         <h2>Фотографии</h2>
         <div class="photos-section">
-            {% if images %}
             <div style="font-weight: 500; margin-bottom: 10px;"></div>
             <div>
-                {% for image in images %}
-                <img src="{{ image.file.url }}" class="photo-thumbnail" alt="Фото запчасти">
-                {% endfor %}
+                <img src="https://via.placeholder.com/150" class="photo-thumbnail" alt="Фото запчасти">
+                <img src="https://via.placeholder.com/150" class="photo-thumbnail" alt="Фото запчасти">
             </div>
-            {% else %}
-            <p>Фотографии отсутствуют.</p>
-            {% endif %}
         </div>
         <div style="margin-top: 30px;">
-            <a href="{% url 'spare_part_list_delete' %}" class="btn btn-secondary">К списку</a>
+            <a href="#" class="btn btn-secondary">К списку</a>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/menu.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import VehicleTypeCreateView, VehicleTypeListView, VehicleTypeUpdateView, VehicleTypeDeleteView, \
+from vehicle.views import VehicleTypeCreateView, VehicleTypeListView, VehicleTypeUpdateView, VehicleTypeDeleteView, \
     VehicleCreateView, VehicleDeleteView, VehicleListView, VehicleUpdateView, VehicleDetailView
 
 urlpatterns = [

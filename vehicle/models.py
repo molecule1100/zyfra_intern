@@ -14,9 +14,9 @@ class VehicleType(models.Model):
 
 class Vehicle(models.Model):
     class OperationStatusChoices(models.TextChoices):
-        IN_USE = 'В работе'
-        IDLE = 'Простой'
-        REPAIR = 'Ремонт'
+        IN_USE = '1', 'В работе'
+        IDLE = '2', 'Простой'
+        REPAIR = '3', 'Ремонт'
 
     reg_number = models.CharField(max_length=50)
     brand = models.CharField(max_length=50)
@@ -30,7 +30,7 @@ class Vehicle(models.Model):
 
 
 class VehicleImage(models.Model):
-    file = ImageField(upload_to='vehicle/images/')
+    file = ImageField(upload_to='images/')
     vehicle = models.ForeignKey(Vehicle, related_name='images', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,5 +1,5 @@
 from django import forms
-from .models import VehicleType, Vehicle
+from vehicle.models import VehicleType, Vehicle
 
 
 class CreateUpdateVehicleTypeForm(forms.ModelForm):

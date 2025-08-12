@@ -1,0 +1,94 @@
+{% extends "vehicle/base.html" %}
+{% load thumbnail %}
+
+{% block title %}{{ vehicle.reg_number }} — Карточка техники{% endblock %}
+
+{% block content %}
+  <h1 class="mb-4">Карточка техники</h1>
+
+  <div class="card-details">
+    <div class="detail-item">
+      <span class="detail-label">Регистрационный номер:</span>
+      {{ vehicle.reg_number }}
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Бренд:</span>
+      {{ vehicle.brand }}
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Дата покупки:</span>
+      {{ vehicle.date_purchase|date:"Y-m-d" }}
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Тип техники:</span>
+      {{ vehicle.type }}
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Пробег:</span>
+      {{ vehicle.mileage }} км
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Статус эксплуатации:</span>
+      <span class="badge status-badge
+        {% if vehicle.operation_status == 'in_use' %}bg-success
+        {% elif vehicle.operation_status == 'idle' %}bg-warning text-dark
+        {% elif vehicle.operation_status == 'repair' %}bg-danger
+        {% else %}bg-secondary{% endif %}">
+        {{ vehicle.get_operation_status_display }}
+      </span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Создано:</span>
+      {{ vehicle.created_at|date:"Y-m-d" }}
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Обновлено:</span>
+      {{ vehicle.updated_at|date:"Y-m-d" }}
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Удалено:</span>
+      {% if vehicle.is_deleted %}✔{% else %}✗{% endif %}
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <h3>Фотографии</h3>
+  <div class="photo-gallery d-flex flex-wrap">
+    {% for image in active_images %}
+      <div class="me-2 mb-2">
+        {% thumbnail image.file "200x200" crop="center" as im %}
+          <img src="{{ im.url }}" class="photo-thumbnail img-thumbnail" alt="Фото техники">
+        {% endthumbnail %}
+      </div>
+    {% empty %}
+      <p>Фотографии отсутствуют</p>
+    {% endfor %}
+  </div>
+
+  <hr class="my-4">
+
+  <h3>Запчасти</h3>
+  <div class="table-responsive parts-table">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Тип</th>
+          <th>Статус</th>
+          <th>Дата установки</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="5" class="text-center">Нет данных о запчастях</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'vehicle:vehicle-list' %}" class="btn btn-secondary">Назад к списку</a>
+  </div>
+{% endblock %}

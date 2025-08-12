@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'vehicle',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -106,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'frontend')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'vehicle')
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

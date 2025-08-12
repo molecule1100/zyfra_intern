@@ -1,0 +1,104 @@
+body {
+  padding-left: 15px;
+}
+.container {
+  max-width: 100%;
+  padding-left: 0;
+}
+.card-details {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 30px;
+  margin-left: -5px;
+}
+.detail-item {
+  margin-bottom: 10px;
+}
+.detail-label {
+  font-weight: bold;
+  display: inline-block;
+  width: 180px;
+}
+.photo-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+.photo-thumbnail {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+}
+.parts-table {
+  margin-top: 30px;
+}
+.status-badge {
+  font-size: 0.9em;
+  padding: 5px 10px;
+}
+h1 {
+  margin-left: -5px;
+}
+.filter-input {
+    max-width: 300px;
+}
+.deleted-true {
+    color: #dc3545;
+}
+.deleted-false {
+    color: #28a745;
+}
+.action-buttons {
+    white-space: nowrap;
+}
+.action-buttons .btn {
+    margin-right: 5px;
+}
+.action-buttons .btn:last-child {
+    margin-right: 0;
+}
+.filter-form {
+    margin-bottom: 20px;
+}
+body.form-page {
+    padding: 20px 15px;
+}
+
+.form-container {
+    margin-left: -5px;
+}
+body.list-page {
+    padding: 20px 0 20px 10px;
+    background-color: #f8f9fa;
+}
+
+.table-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-left: 0;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    padding-left: 10px;
+}
+
+.table td {
+    padding-left: 10px;
+}
+
+h1.list-title {
+    margin-left: 10px;
+}
+
+.datetime {
+    white-space: nowrap;
+}
+

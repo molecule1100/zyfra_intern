@@ -1,0 +1,28 @@
+{% extends "vehicle/base.html" %}
+
+{% block title %}Создание типа запчасти{% endblock %}
+
+{% block content %}
+<div class="container form-page">
+    <div class="form-container">
+        <h2 class="mb-4">Создание типа запчасти</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+                <input type="text" name="{{ form.name.name }}"
+                       id="{{ form.name.id_for_label }}"
+                       class="form-control"
+                       value="{{ form.name.value|default:'' }}">
+                {% if form.name.errors %}
+                    <div class="text-danger">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "vehicle/base.html" %}
+
+{% block title %}Атрибут: {{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+    <h2 class="mb-4">Атрибут: {{ object.name }}</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Название:</strong> {{ object.name }}</p>
+            <p><strong>Единица измерения:</strong> {{ object.unit|default:"не указана" }}</p>
+            <p><strong>Тип данных:</strong> {{ object.data_type }}</p>
+            <p><strong>Дата создания:</strong> {{ object.created_at|date:"d.m.Y H:i" }}</p>
+            <p><strong>Обновлено:</strong> {{ object.updated_at|date:"d.m.Y H:i" }}</p>
+            <p><strong>Удалено:</strong>
+                {% if object.is_deleted %}
+                    <span class="text-danger fw-bold">✔</span>
+                {% else %}
+                    <span class="text-success fw-bold">✘</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <h5 class="mb-3">Применяется к типам запчастей</h5>
+
+        {% if attribute_types %}
+        <div class="d-flex flex-wrap mb-3">
+            {% for attr_type in attribute_types %}
+                <div class="me-2 mb-2">
+                    <span class="badge bg-secondary p-2">
+                        {{ attr_type.spare_part_type.name }}
+                        <span class="ms-2">{{ attr_type.value|default:"значение не указано" }}</span>
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="text-muted">Атрибут не привязан ни к одному типу запчастей</p>
+        {% endif %}
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="{% url 'spare_part:attribute-update' object.pk %}" class="btn btn-primary">
+            Редактировать
+        </a>
+        <a href="{% url 'spare_part:attribute-list' %}" class="btn btn-outline-secondary">
+            Вернуться к списку
+        </a>
+    </div>
+</div>
+{% endblock %}

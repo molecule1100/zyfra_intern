@@ -1,0 +1,84 @@
+{% extends "vehicle/base.html" %}
+{% load thumbnail %}
+
+{% block title %}Создание запчасти{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <h2 class="mb-4">Создание запчасти</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="id_spare_part_type" class="form-label">Тип запчасти</label>
+            <select name="spare_part_type" class="form-select" id="id_spare_part_type" required>
+                {% for value, label in form.spare_part_type.field.choices %}
+                    <option value="{{ value }}" {% if form.spare_part_type.value == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if form.spare_part_type.errors %}
+                <div class="text-danger">{{ form.spare_part_type.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_vehicle" class="form-label">Техника</label>
+            <select name="vehicle" class="form-select" id="id_vehicle">
+                {% for value, label in form.vehicle.field.choices %}
+                    <option value="{{ value }}" {% if form.vehicle.value == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if form.vehicle.errors %}
+                <div class="text-danger">{{ form.vehicle.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_status" class="form-label">Статус</label>
+            <select name="status" class="form-select" id="id_status" required>
+                {% for value, label in form.status.field.choices %}
+                    <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if form.status.errors %}
+                <div class="text-danger">{{ form.status.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <h5 class="mb-3">Фотографии запчасти</h5>
+
+            {% if active_images %}
+            <div class="d-flex flex-wrap mb-3">
+                {% for image in active_images %}
+                    <div class="photo-item me-2 mb-2">
+                        {% thumbnail image.file "200x200" crop="center" as im %}
+                            <img src="{{ im.url }}" class="img-thumbnail">
+                        {% endthumbnail %}
+                        <button type="submit"
+                                name="delete_image_id"
+                                value="{{ image.id }}"
+                                class="delete-btn btn btn-sm btn-danger mt-1"
+                                onclick="return confirm('Удалить фото?');">
+                            ×
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <input type="file" name="images" multiple class="form-control mb-2">
+            <input type="file" name="images" multiple class="form-control mb-2">
+            <input type="file" name="images" multiple class="form-control mb-2">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

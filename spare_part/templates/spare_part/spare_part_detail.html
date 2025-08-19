@@ -1,0 +1,45 @@
+{% extends "vehicle/base.html" %}
+{% load thumbnail %}
+
+{% block title %}Запчасть{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+    <h2 class="mb-4">Запчасть</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p>Тип детали: {{ object.spare_part_type.name }}</p>
+            <p>Техника: {{ object.vehicle }}</p>
+            <p>Статус: {{ object.get_status_display }}</p>
+            <p>Дата создания: {{ object.created_at|date:"d.m.Y H:i" }}</p>
+            <p>Обновлено: {{ object.updated_at|date:"d.m.Y H:i" }}</p>
+            <p>Удалено:
+                {% if object.is_deleted %}
+                    <span class="text-danger fw-bold">✔</span>
+                {% else %}
+                    <span class="text-success fw-bold">✘</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <h5 class="mb-3">Фотографии детали</h5>
+
+        {% if active_images %}
+        <div class="d-flex flex-wrap mb-3">
+            {% for image in active_images %}
+                <div class="photo-item me-2 mb-2 text-center">
+                    {% thumbnail image.file "200x200" crop="center" as im %}
+                        <img src="{{ im.url }}" class="img-thumbnail">
+                    {% endthumbnail %}
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="text-muted">Фотографий пока нет</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

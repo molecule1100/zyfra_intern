@@ -13,10 +13,10 @@
         Техника
       </button>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="http://127.0.0.1:8000/vehicle/vehicle-types/create/">Создать тип</a></li>
-        <li><a class="dropdown-item" href="http://127.0.0.1:8000/vehicle/vehicle-types/">Список типов</a></li>
-        <li><a class="dropdown-item" href="http://127.0.0.1:8000/vehicle/vehicles/create/">Создать технику</a></li>
-        <li><a class="dropdown-item" href="http://127.0.0.1:8000/vehicle/vehicles/">Список техники</a></li>
+        <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-type-create' %}">Создать тип</a></li>
+        <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-type-list' %}">Список типов</a></li>
+        <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-create' %}">Создать технику</a></li>
+        <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-list' %}">Список техники</a></li>
       </ul>
     </div>
 
@@ -25,10 +25,10 @@
         Запчасти
       </button>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Создать тип</a></li>
-        <li><a class="dropdown-item" href="#">Список типов</a></li>
-        <li><a class="dropdown-item" href="#">Создать запчасть</a></li>
-        <li><a class="dropdown-item" href="#">Список запчастей</a></li>
+        <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-type-create' %}">Создать тип</a></li>
+        <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-type-list' %}">Список типов</a></li>
+        <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-create' %}">Создать запчасть</a></li>
+        <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-list' %}">Список запчастей</a></li>
       </ul>
     </div>
 
@@ -37,8 +37,8 @@
         Атрибуты
       </button>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Создать атрибут</a></li>
-        <li><a class="dropdown-item" href="#">Список атрибутов</a></li>
+        <li><a class="dropdown-item" href="{% url 'spare_part:attribute-create' %}">Создать атрибут</a></li>
+        <li><a class="dropdown-item" href="{% url 'spare_part:attribute-list' %}">Список атрибутов</a></li>
       </ul>
     </div>
     </div>

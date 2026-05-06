@@ -1,3 +1,4 @@
+{% load auth_extras %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -13,9 +14,13 @@
         Техника
       </button>
       <ul class="dropdown-menu">
+        {% if user|in_group:"Администраторы,Механики" %}
         <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-type-create' %}">Создать тип</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-type-list' %}">Список типов</a></li>
+        {% if user|in_group:"Администраторы,Механики" %}
         <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-create' %}">Создать технику</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-list' %}">Список техники</a></li>
       </ul>
     </div>
@@ -25,9 +30,13 @@
         Запчасти
       </button>
       <ul class="dropdown-menu">
+        {% if user|in_group:"Администраторы,Кладовщики" %}
         <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-type-create' %}">Создать тип</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-type-list' %}">Список типов</a></li>
+        {% if user|in_group:"Администраторы,Кладовщики" %}
         <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-create' %}">Создать запчасть</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-list' %}">Список запчастей</a></li>
       </ul>
     </div>
@@ -37,7 +46,9 @@
         Атрибуты
       </button>
       <ul class="dropdown-menu">
+        {% if user|in_group:"Администраторы,Кладовщики" %}
         <li><a class="dropdown-item" href="{% url 'spare_part:attribute-create' %}">Создать атрибут</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'spare_part:attribute-list' %}">Список атрибутов</a></li>
       </ul>
     </div>

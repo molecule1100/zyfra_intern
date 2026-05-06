@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
+from intern_project.mixins import GroupRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -10,14 +11,16 @@ from spare_part.models import SparePart, SparePartType, SparePartImage, Attribut
 from spare_part.forms import CreateUpdateSparePartTypeForm, CreateUpdateSparePartForm, CreateUpdateAttributeForm
 
 
-class SparePartTypeCreateView(LoginRequiredMixin, CreateView):
+class SparePartTypeCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     model = SparePartType
     form_class = CreateUpdateSparePartTypeForm
     template_name = 'spare_part/spare_part_type_form.html'
     success_url = reverse_lazy('spare_part:spare-part-type-list')
 
 
-class SparePartTypeUpdateView(LoginRequiredMixin, UpdateView):
+class SparePartTypeUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     model = SparePartType
     form_class = CreateUpdateSparePartTypeForm
     template_name = 'spare_part/spare_part_type_form.html'
@@ -35,7 +38,8 @@ class SparePartTypeListView(LoginRequiredMixin, ListView):
         return context
 
 
-class SparePartTypeDeleteView(LoginRequiredMixin, View):
+class SparePartTypeDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     success_url = reverse_lazy('spare_part:spare-part-type-list')
 
     def post(self, request, pk):
@@ -45,7 +49,8 @@ class SparePartTypeDeleteView(LoginRequiredMixin, View):
         return HttpResponseRedirect(self.success_url)
 
 
-class SparePartCreateView(LoginRequiredMixin, CreateView):
+class SparePartCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     model = SparePart
     form_class = CreateUpdateSparePartForm
     template_name = 'spare_part/spare_part_form.html'
@@ -77,7 +82,8 @@ class SparePartDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class SparePartUpdateView(LoginRequiredMixin, UpdateView):
+class SparePartUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     model = SparePart
     form_class = CreateUpdateSparePartForm
     template_name = 'spare_part/spare_part_form.html'
@@ -116,7 +122,8 @@ class SparePartListView(LoginRequiredMixin, ListView):
     success_url = reverse_lazy('spare_part:spare-part-list')
 
 
-class SparePartDeleteView(LoginRequiredMixin, View):
+class SparePartDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     success_url = reverse_lazy('spare_part:spare-part-list')
 
     def post(self, request, pk):
@@ -126,14 +133,16 @@ class SparePartDeleteView(LoginRequiredMixin, View):
         return HttpResponseRedirect(self.success_url)
 
 
-class AttributeCreateView(LoginRequiredMixin, CreateView):
+class AttributeCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     model = Attribute
     form_class = CreateUpdateAttributeForm
     template_name = 'spare_part/attribute_form.html'
     success_url = reverse_lazy('spare_part:attribute-list')
 
 
-class AttributeUpdateView(LoginRequiredMixin, UpdateView):
+class AttributeUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     model = Attribute
     form_class = CreateUpdateAttributeForm
     template_name = 'spare_part/attribute_form.html'
@@ -157,7 +166,8 @@ class AttributeDetailView(LoginRequiredMixin, DetailView):
     success_url = reverse_lazy('spare_part:attribute-detail')
 
 
-class AttributeDeleteView(LoginRequiredMixin, View):
+class AttributeDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Кладовщики']
     success_url = reverse_lazy('spare_part:attribute-list')
 
     def post(self, request, pk):

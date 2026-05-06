@@ -1,4 +1,5 @@
 {% extends "vehicle/base.html" %}
+{% load auth_extras %}
 
 {% block title %}Список запчастей{% endblock %}
 
@@ -46,12 +47,14 @@
           </td>
           <td class="action-buttons">
             <a href="{% url 'spare_part:spare-part-detail' spare.pk %}" class="btn btn-sm btn-outline-primary">Открыть</a>
+            {% if user|in_group:"Администраторы,Кладовщики" %}
             <a href="{% url 'spare_part:spare-part-update' spare.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
             {% if not spare.is_deleted %}
                 <form method="post" action="{% url 'spare_part:spare-part-delete' spare.pk %}" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить запчасть №{{ spare.id }}?');">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                 </form>
+            {% endif %}
             {% endif %}
           </td>
         </tr>

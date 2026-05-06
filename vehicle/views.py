@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
+from intern_project.mixins import GroupRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -10,14 +11,16 @@ from vehicle.models import Vehicle, VehicleType, VehicleImage
 from vehicle.forms import CreateUpdateVehicleTypeForm, CreateUpdateVehicleForm
 
 
-class VehicleTypeCreateView(LoginRequiredMixin, CreateView):
+class VehicleTypeCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
+    allowed_groups = ['Администраторы', 'Механики']
     model = VehicleType
     form_class = CreateUpdateVehicleTypeForm
     template_name = 'vehicle/vehicletype_form.html'
     success_url = reverse_lazy('vehicle:vehicle-type-list')
 
 
-class VehicleTypeUpdateView(LoginRequiredMixin, UpdateView):
+class VehicleTypeUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    allowed_groups = ['Администраторы', 'Механики']
     model = VehicleType
     form_class = CreateUpdateVehicleTypeForm
     template_name = 'vehicle/vehicletype_form.html'
@@ -35,7 +38,8 @@ class VehicleTypeListView(LoginRequiredMixin, ListView):
         return context
 
 
-class VehicleTypeDeleteView(LoginRequiredMixin, View):
+class VehicleTypeDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Механики']
     success_url = reverse_lazy('vehicle:vehicle-type-list')
 
     def post(self, request, pk):
@@ -45,7 +49,8 @@ class VehicleTypeDeleteView(LoginRequiredMixin, View):
         return HttpResponseRedirect(self.success_url)
 
 
-class VehicleCreateView(LoginRequiredMixin, CreateView):
+class VehicleCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
+    allowed_groups = ['Администраторы', 'Механики']
     model = Vehicle
     form_class = CreateUpdateVehicleForm
     template_name = 'vehicle/vehicle_form.html'
@@ -77,7 +82,8 @@ class VehicleDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class VehicleUpdateView(LoginRequiredMixin, UpdateView):
+class VehicleUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    allowed_groups = ['Администраторы', 'Механики']
     model = Vehicle
     form_class = CreateUpdateVehicleForm
     template_name = 'vehicle/vehicle_form.html'
@@ -123,7 +129,8 @@ class VehicleListView(LoginRequiredMixin, ListView):
         return queryset
 
 
-class VehicleDeleteView(LoginRequiredMixin, View):
+class VehicleDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Механики']
     success_url = reverse_lazy('vehicle:vehicle-list')
 
     def post(self, request, pk):

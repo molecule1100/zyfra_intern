@@ -26,3 +26,17 @@ docker-compose up --build
 
 - zyfra — контейнер с Django приложением
 - db — контейнер с PostgreSQL
+
+4. Создать суперпользователя
+
+```
+docker-compose exec zyfra python manage.py createsuperuser
+```
+
+Или использовать демо-данные (после задачи 11):
+
+```
+docker-compose exec zyfra python manage.py seed_demo
+```
+
+Логин `admin`, пароль `demo12345`.

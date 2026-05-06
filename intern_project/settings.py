@@ -60,7 +60,7 @@ ROOT_URLCONF = 'intern_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,6 +73,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'intern_project.wsgi.application'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'vehicle:vehicle-list'
+LOGOUT_REDIRECT_URL = 'login'
 
 
 # Database

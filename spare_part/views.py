@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -9,21 +10,21 @@ from spare_part.models import SparePart, SparePartType, SparePartImage, Attribut
 from spare_part.forms import CreateUpdateSparePartTypeForm, CreateUpdateSparePartForm, CreateUpdateAttributeForm
 
 
-class SparePartTypeCreateView(CreateView):
+class SparePartTypeCreateView(LoginRequiredMixin, CreateView):
     model = SparePartType
     form_class = CreateUpdateSparePartTypeForm
     template_name = 'spare_part/spare_part_type_form.html'
     success_url = reverse_lazy('spare_part:spare-part-type-list')
 
 
-class SparePartTypeUpdateView(UpdateView):
+class SparePartTypeUpdateView(LoginRequiredMixin, UpdateView):
     model = SparePartType
     form_class = CreateUpdateSparePartTypeForm
     template_name = 'spare_part/spare_part_type_form.html'
     success_url = reverse_lazy('spare_part:spare-part-type-list')
 
 
-class SparePartTypeListView(ListView):
+class SparePartTypeListView(LoginRequiredMixin, ListView):
     model = SparePartType
     paginate_by = 10
     template_name = 'spare_part/spare_part_type_list.html'
@@ -34,7 +35,7 @@ class SparePartTypeListView(ListView):
         return context
 
 
-class SparePartTypeDeleteView(View):
+class SparePartTypeDeleteView(LoginRequiredMixin, View):
     success_url = reverse_lazy('spare_part:spare-part-type-list')
 
     def post(self, request, pk):
@@ -44,7 +45,7 @@ class SparePartTypeDeleteView(View):
         return HttpResponseRedirect(self.success_url)
 
 
-class SparePartCreateView(CreateView):
+class SparePartCreateView(LoginRequiredMixin, CreateView):
     model = SparePart
     form_class = CreateUpdateSparePartForm
     template_name = 'spare_part/spare_part_form.html'
@@ -64,7 +65,7 @@ class SparePartCreateView(CreateView):
         return context
 
 
-class SparePartDetailView(DetailView):
+class SparePartDetailView(LoginRequiredMixin, DetailView):
     model = SparePart
     template_name = 'spare_part/spare_part_detail.html'
     success_url = reverse_lazy('spare_part:spare-part-detail')
@@ -76,7 +77,7 @@ class SparePartDetailView(DetailView):
         return context
 
 
-class SparePartUpdateView(UpdateView):
+class SparePartUpdateView(LoginRequiredMixin, UpdateView):
     model = SparePart
     form_class = CreateUpdateSparePartForm
     template_name = 'spare_part/spare_part_form.html'
@@ -108,14 +109,14 @@ class SparePartUpdateView(UpdateView):
             return self.form_invalid(form)
 
 
-class SparePartListView(ListView):
+class SparePartListView(LoginRequiredMixin, ListView):
     model = SparePart
     paginate_by = 10
     template_name = 'spare_part/spare_part_list.html'
     success_url = reverse_lazy('spare_part:spare-part-list')
 
 
-class SparePartDeleteView(View):
+class SparePartDeleteView(LoginRequiredMixin, View):
     success_url = reverse_lazy('spare_part:spare-part-list')
 
     def post(self, request, pk):
@@ -125,21 +126,21 @@ class SparePartDeleteView(View):
         return HttpResponseRedirect(self.success_url)
 
 
-class AttributeCreateView(CreateView):
+class AttributeCreateView(LoginRequiredMixin, CreateView):
     model = Attribute
     form_class = CreateUpdateAttributeForm
     template_name = 'spare_part/attribute_form.html'
     success_url = reverse_lazy('spare_part:attribute-list')
 
 
-class AttributeUpdateView(UpdateView):
+class AttributeUpdateView(LoginRequiredMixin, UpdateView):
     model = Attribute
     form_class = CreateUpdateAttributeForm
     template_name = 'spare_part/attribute_form.html'
     success_url = reverse_lazy('spare_part:attribute-list')
 
 
-class AttributeListView(ListView):
+class AttributeListView(LoginRequiredMixin, ListView):
     model = Attribute
     paginate_by = 5
     template_name = 'spare_part/attribute_list.html'
@@ -150,13 +151,13 @@ class AttributeListView(ListView):
         return context
 
 
-class AttributeDetailView(DetailView):
+class AttributeDetailView(LoginRequiredMixin, DetailView):
     model = Attribute
     template_name = 'spare_part/attribute_detail.html'
     success_url = reverse_lazy('spare_part:attribute-detail')
 
 
-class AttributeDeleteView(View):
+class AttributeDeleteView(LoginRequiredMixin, View):
     success_url = reverse_lazy('spare_part:attribute-list')
 
     def post(self, request, pk):

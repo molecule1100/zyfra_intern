@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -9,21 +10,21 @@ from vehicle.models import Vehicle, VehicleType, VehicleImage
 from vehicle.forms import CreateUpdateVehicleTypeForm, CreateUpdateVehicleForm
 
 
-class VehicleTypeCreateView(CreateView):
+class VehicleTypeCreateView(LoginRequiredMixin, CreateView):
     model = VehicleType
     form_class = CreateUpdateVehicleTypeForm
     template_name = 'vehicle/vehicletype_form.html'
     success_url = reverse_lazy('vehicle:vehicle-type-list')
 
 
-class VehicleTypeUpdateView(UpdateView):
+class VehicleTypeUpdateView(LoginRequiredMixin, UpdateView):
     model = VehicleType
     form_class = CreateUpdateVehicleTypeForm
     template_name = 'vehicle/vehicletype_form.html'
     success_url = reverse_lazy('vehicle:vehicle-type-list')
 
 
-class VehicleTypeListView(ListView):
+class VehicleTypeListView(LoginRequiredMixin, ListView):
     model = VehicleType
     paginate_by = 10
     template_name = 'vehicle/vehicletype_list.html'
@@ -34,7 +35,7 @@ class VehicleTypeListView(ListView):
         return context
 
 
-class VehicleTypeDeleteView(View):
+class VehicleTypeDeleteView(LoginRequiredMixin, View):
     success_url = reverse_lazy('vehicle:vehicle-type-list')
 
     def post(self, request, pk):
@@ -44,7 +45,7 @@ class VehicleTypeDeleteView(View):
         return HttpResponseRedirect(self.success_url)
 
 
-class VehicleCreateView(CreateView):
+class VehicleCreateView(LoginRequiredMixin, CreateView):
     model = Vehicle
     form_class = CreateUpdateVehicleForm
     template_name = 'vehicle/vehicle_form.html'
@@ -64,7 +65,7 @@ class VehicleCreateView(CreateView):
         return context
 
 
-class VehicleDetailView(DetailView):
+class VehicleDetailView(LoginRequiredMixin, DetailView):
     model = Vehicle
     template_name = 'vehicle/vehicle_detail.html'
     success_url = reverse_lazy('vehicle:vehicle-detail')
@@ -76,7 +77,7 @@ class VehicleDetailView(DetailView):
         return context
 
 
-class VehicleUpdateView(UpdateView):
+class VehicleUpdateView(LoginRequiredMixin, UpdateView):
     model = Vehicle
     form_class = CreateUpdateVehicleForm
     template_name = 'vehicle/vehicle_form.html'
@@ -108,7 +109,7 @@ class VehicleUpdateView(UpdateView):
             return self.form_invalid(form)
 
 
-class VehicleListView(ListView):
+class VehicleListView(LoginRequiredMixin, ListView):
     model = Vehicle
     paginate_by = 10
     template_name = 'vehicle/vehicle_list.html'
@@ -122,7 +123,7 @@ class VehicleListView(ListView):
         return queryset
 
 
-class VehicleDeleteView(View):
+class VehicleDeleteView(LoginRequiredMixin, View):
     success_url = reverse_lazy('vehicle:vehicle-list')
 
     def post(self, request, pk):

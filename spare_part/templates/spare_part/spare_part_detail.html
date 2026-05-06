@@ -24,6 +24,27 @@
         </div>
     </div>
 
+    {% if attribute_values %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Атрибуты</h5>
+            <table class="table table-sm">
+                <thead>
+                    <tr><th>Атрибут</th><th>Значение</th></tr>
+                </thead>
+                <tbody>
+                    {% for av in attribute_values %}
+                    <tr>
+                        <td>{{ av.attribute.name }}{% if av.attribute.unit %} ({{ av.attribute.unit }}){% endif %}</td>
+                        <td>{{ av.value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="mb-4">
         <h5 class="mb-3">Фотографии детали</h5>
 

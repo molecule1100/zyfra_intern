@@ -7,8 +7,9 @@ from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView
 
-from spare_part.models import SparePart, SparePartType, SparePartImage, Attribute, AttributeValue
-from spare_part.forms import CreateUpdateSparePartTypeForm, CreateUpdateSparePartForm, CreateUpdateAttributeForm
+from spare_part.models import SparePart, SparePartType, SparePartImage, Attribute, AttributeValue, SparePartTypeAttribute
+from spare_part.forms import (CreateUpdateSparePartTypeForm, CreateUpdateSparePartForm,
+                               CreateUpdateAttributeForm, SparePartTypeAttributeFormSet, AttributeValueForm)
 
 
 class SparePartTypeCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
@@ -18,6 +19,23 @@ class SparePartTypeCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView
     template_name = 'spare_part/spare_part_type_form.html'
     success_url = reverse_lazy('spare_part:spare-part-type-list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['attr_formset'] = SparePartTypeAttributeFormSet(self.request.POST, instance=self.object)
+        else:
+            context['attr_formset'] = SparePartTypeAttributeFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        attr_formset = context['attr_formset']
+        self.object = form.save()
+        if attr_formset.is_valid():
+            attr_formset.instance = self.object
+            attr_formset.save()
+        return redirect(self.success_url)
+
 
 class SparePartTypeUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     allowed_groups = ['Администраторы', 'Кладовщики']
@@ -25,6 +43,23 @@ class SparePartTypeUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView
     form_class = CreateUpdateSparePartTypeForm
     template_name = 'spare_part/spare_part_type_form.html'
     success_url = reverse_lazy('spare_part:spare-part-type-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['attr_formset'] = SparePartTypeAttributeFormSet(self.request.POST, instance=self.object)
+        else:
+            context['attr_formset'] = SparePartTypeAttributeFormSet(instance=self.object)
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        attr_formset = context['attr_formset']
+        self.object = form.save()
+        if attr_formset.is_valid():
+            attr_formset.instance = self.object
+            attr_formset.save()
+        return redirect(self.success_url)
 
 
 class SparePartTypeListView(LoginRequiredMixin, ListView):
@@ -79,6 +114,7 @@ class SparePartDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         if self.object:
             context['active_images'] = self.object.images.filter(is_deleted=False)
+            context['attribute_values'] = self.object.attribute_values.filter(is_deleted=False).select_related('attribute')
         return context
 
 
@@ -93,6 +129,22 @@ class SparePartUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         if self.object:
             context['active_images'] = self.object.images.filter(is_deleted=False)
+            type_attributes = []
+            if self.object.spare_part_type:
+                type_attributes = self.object.spare_part_type.type_attributes.filter(
+                    is_deleted=False
+                ).select_related('attribute')
+            attr_forms = []
+            for ta in type_attributes:
+                existing = self.object.attribute_values.filter(attribute=ta.attribute).first()
+                form = AttributeValueForm(
+                    self.request.POST or None,
+                    instance=existing,
+                    prefix=f'attr_{ta.attribute.pk}',
+                    initial={'attribute': ta.attribute},
+                )
+                attr_forms.append((ta.attribute, form))
+            context['attr_forms'] = attr_forms
         return context
 
     def post(self, request, *args, **kwargs):
@@ -110,6 +162,24 @@ class SparePartUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
             images = request.FILES.getlist('images')
             for image_file in images:
                 SparePartImage.objects.create(spare_part=self.object, file=image_file)
+            # Save attribute values
+            if self.object.spare_part_type:
+                type_attributes = self.object.spare_part_type.type_attributes.filter(
+                    is_deleted=False
+                ).select_related('attribute')
+                for ta in type_attributes:
+                    existing = self.object.attribute_values.filter(attribute=ta.attribute).first()
+                    av_form = AttributeValueForm(
+                        request.POST,
+                        instance=existing,
+                        prefix=f'attr_{ta.attribute.pk}',
+                        initial={'attribute': ta.attribute},
+                    )
+                    if av_form.is_valid() and av_form.cleaned_data.get('value'):
+                        av = av_form.save(commit=False)
+                        av.spare_part = self.object
+                        av.attribute = ta.attribute
+                        av.save()
             return response
         else:
             return self.form_invalid(form)

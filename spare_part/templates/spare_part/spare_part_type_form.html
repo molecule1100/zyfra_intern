@@ -21,7 +21,32 @@
                 {% endif %}
             </div>
 
-            <button type="submit" class="btn btn-primary">Сохранить</button>
+            {% if attr_formset %}
+            <h5 class="mt-4 mb-2">Применимые атрибуты</h5>
+            {{ attr_formset.management_form }}
+            {% for af in attr_formset %}
+              <div class="row g-2 align-items-center mb-2">
+                {{ af.id }}
+                <div class="col-md-6">{{ af.attribute }}</div>
+                <div class="col-md-3">
+                  <div class="form-check">
+                    {{ af.is_required }}
+                    <label class="form-check-label">Обязательный</label>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  {% if af.instance.pk %}
+                  <div class="form-check">
+                    {{ af.DELETE }}
+                    <label class="form-check-label text-danger">Удалить</label>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
         </form>
     </div>
 </div>

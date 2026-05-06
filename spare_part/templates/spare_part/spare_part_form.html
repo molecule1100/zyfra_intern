@@ -52,6 +52,23 @@
             {% endif %}
         </div>
 
+        {% if attr_forms %}
+        <div class="mb-4">
+            <h5 class="mb-3">Атрибуты запчасти</h5>
+            {% for attribute, attr_form in attr_forms %}
+            <div class="mb-3">
+                <label class="form-label">{{ attribute.name }}{% if attribute.unit %} ({{ attribute.unit }}){% endif %}</label>
+                {{ attr_form.attribute }}
+                <input type="text"
+                       name="{{ attr_form.value.html_name }}"
+                       class="form-control"
+                       value="{{ attr_form.value.value|default:'' }}"
+                       placeholder="Введите значение">
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="mb-4">
             <h5 class="mb-3">Фотографии запчасти</h5>
 

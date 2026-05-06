@@ -1,6 +1,10 @@
+import logging
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from intern_project.mixins import GroupRequiredMixin
+
+logger = logging.getLogger('vehicle')
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -160,4 +164,5 @@ class VehicleDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
         vehicle = Vehicle.objects.get(pk=pk)
         vehicle.is_deleted = True
         vehicle.save()
+        logger.info(f'Техника {vehicle} удалена пользователем {request.user}')
         return HttpResponseRedirect(self.success_url)

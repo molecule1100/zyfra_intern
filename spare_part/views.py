@@ -236,6 +236,7 @@ class SparePartDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
         spare_part = SparePart.objects.get(pk=pk)
         spare_part.is_deleted = True
         spare_part.save()
+        logger.info(f'Запчасть {spare_part} удалена пользователем {request.user}')
         return HttpResponseRedirect(self.success_url)
 
 

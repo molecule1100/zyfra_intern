@@ -28,7 +28,9 @@ class SparePart(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.vehicle
+        vehicle_str = str(self.vehicle) if self.vehicle else "без техники"
+        type_str = self.spare_part_type.name if self.spare_part_type else "без типа"
+        return f"{type_str} ({vehicle_str})"
 
 
 class SparePartImage(models.Model):

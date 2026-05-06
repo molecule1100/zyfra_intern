@@ -35,7 +35,7 @@ class SparePart(models.Model):
 
 class SparePartImage(models.Model):
     file = ImageField(upload_to='images/')
-    vehicle = models.ForeignKey(SparePart, related_name='images', on_delete=models.CASCADE)
+    spare_part = models.ForeignKey(SparePart, related_name='images', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)

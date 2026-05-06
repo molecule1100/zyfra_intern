@@ -54,7 +54,7 @@ class SparePartCreateView(CreateView):
         response = super().form_valid(form)
         images = self.request.FILES.getlist('images')
         for image in images:
-            SparePartImage.objects.create(vehicle=self.object, file=image)
+            SparePartImage.objects.create(spare_part=self.object, file=image)
         return response
 
     def get_context_data(self, **kwargs):
@@ -92,7 +92,7 @@ class SparePartUpdateView(UpdateView):
         self.object = self.get_object()
         delete_image_id = request.POST.get('delete_image_id')
         if delete_image_id:
-            image = SparePartImage.objects.get(id=delete_image_id, vehicle=self.object)
+            image = SparePartImage.objects.get(id=delete_image_id, spare_part=self.object)
             image.is_deleted = True
             image.save()
             return redirect(self.request.path)
@@ -102,7 +102,7 @@ class SparePartUpdateView(UpdateView):
             response = self.form_valid(form)
             images = request.FILES.getlist('images')
             for image_file in images:
-                SparePartImage.objects.create(vehicle=self.object, file=image_file)
+                SparePartImage.objects.create(spare_part=self.object, file=image_file)
             return response
         else:
             return self.form_invalid(form)

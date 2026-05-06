@@ -1,0 +1,125 @@
+{% extends "vehicle/base.html" %}
+
+{% block title %}Дашборд{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Дашборд</h1>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">Техника</h5>
+        <p class="display-6">{{ vehicle_total }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title">Запчасти</h5>
+        <p class="display-6">{{ spare_part_total }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center border-danger">
+      <div class="card-body">
+        <h5 class="card-title text-danger">Техника на ремонте</h5>
+        <p class="display-6 text-danger">{{ vehicles_in_repair.count }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center border-warning">
+      <div class="card-body">
+        <h5 class="card-title text-warning">Ожидают ремонта</h5>
+        <p class="display-6 text-warning">{{ spare_parts_waiting_repair.count }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Статистика техники по статусам</h5>
+        <table class="table table-sm">
+          <thead><tr><th>Статус</th><th>Количество</th></tr></thead>
+          <tbody>
+            {% for stat in vehicle_stats %}
+            <tr>
+              <td>
+                {% if stat.operation_status == '1' %}В работе
+                {% elif stat.operation_status == '2' %}Простой
+                {% elif stat.operation_status == '3' %}Ремонт
+                {% else %}{{ stat.operation_status }}{% endif %}
+              </td>
+              <td>{{ stat.count }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2" class="text-muted">Нет данных</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Топ-5 марок техники</h5>
+        <table class="table table-sm">
+          <thead><tr><th>Марка</th><th>Количество</th></tr></thead>
+          <tbody>
+            {% for brand in top_brands %}
+            <tr><td>{{ brand.brand }}</td><td>{{ brand.count }}</td></tr>
+            {% empty %}
+            <tr><td colspan="2" class="text-muted">Нет данных</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card border-danger">
+      <div class="card-body">
+        <h5 class="card-title text-danger">Техника на ремонте</h5>
+        <ul class="list-group list-group-flush">
+          {% for v in vehicles_in_repair %}
+          <li class="list-group-item">
+            <a href="{% url 'vehicle:vehicle-detail' v.pk %}">{{ v }}</a>
+          </li>
+          {% empty %}
+          <li class="list-group-item text-muted">Нет данных</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card border-warning">
+      <div class="card-body">
+        <h5 class="card-title text-warning">Запчасти, ожидающие ремонта</h5>
+        <ul class="list-group list-group-flush">
+          {% for sp in spare_parts_waiting_repair %}
+          <li class="list-group-item">
+            <a href="{% url 'spare_part:spare-part-detail' sp.pk %}">{{ sp }}</a>
+            {% if sp.vehicle %}<small class="text-muted ms-2">{{ sp.vehicle }}</small>{% endif %}
+          </li>
+          {% empty %}
+          <li class="list-group-item text-muted">Нет данных</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

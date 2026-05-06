@@ -28,12 +28,14 @@ class SparePart(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.vehicle
+        vehicle_str = str(self.vehicle) if self.vehicle else "без техники"
+        type_str = self.spare_part_type.name if self.spare_part_type else "без типа"
+        return f"{type_str} ({vehicle_str})"
 
 
 class SparePartImage(models.Model):
     file = ImageField(upload_to='images/')
-    vehicle = models.ForeignKey(SparePart, related_name='images', on_delete=models.CASCADE)
+    spare_part = models.ForeignKey(SparePart, related_name='images', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
@@ -47,11 +49,41 @@ class Attribute(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.name} ({self.unit})" if self.unit else self.name
+
+
+class SparePartTypeAttribute(models.Model):
+    spare_part_type = models.ForeignKey(SparePartType, on_delete=models.CASCADE, related_name='type_attributes')
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+    is_required = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('spare_part_type', 'attribute')
+
+
+class SparePartInstallation(models.Model):
+    spare_part = models.ForeignKey(SparePart, on_delete=models.CASCADE, related_name='installations')
+    vehicle = models.ForeignKey('vehicle.Vehicle', on_delete=models.CASCADE, related_name='installations')
+    installed_at = models.DateTimeField(auto_now_add=True)
+    installed_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='installations_made')
+    uninstalled_at = models.DateTimeField(null=True, blank=True)
+    uninstalled_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='uninstallations_made')
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['-installed_at']
+
 
 class AttributeValue(models.Model):
+    spare_part = models.ForeignKey(SparePart, on_delete=models.CASCADE, related_name='attribute_values')
     attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
-    spare_part_type = models.ForeignKey(SparePartType, on_delete=models.CASCADE)
-    value = models.CharField(max_length=50)
+    value = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('spare_part', 'attribute')

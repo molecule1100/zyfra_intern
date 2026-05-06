@@ -1,27 +1,43 @@
 {% extends "vehicle/base.html" %}
+{% load auth_extras %}
 
 {% block title %}Список техники{% endblock %}
 
 {% block content %}
 <h1 class="mb-4">Список техники</h1>
 
-<form method="get" class="filter-form row g-3 align-items-center">
-  <div class="col-auto">
-    <label for="brandFilter" class="col-form-label">Фильтр по бренду:</label>
+<form method="get" class="filter-form row g-2 align-items-end mb-3">
+  <div class="col-md-3">
+    <label class="form-label">Бренд</label>
+    <input type="text" name="brand" class="form-control" value="{{ current_brand }}" placeholder="Введите бренд">
   </div>
-  <div class="col-auto">
-    <input type="text"
-           name="brand"
-           id="brandFilter"
-           class="form-control filter-input"
-           value="{{ current_brand }}"
-           placeholder="Введите бренд">
+  <div class="col-md-2">
+    <label class="form-label">Статус</label>
+    <select name="status" class="form-select">
+      <option value="">— все —</option>
+      {% for val, label in status_choices %}
+      <option value="{{ val }}" {% if current_status == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
   </div>
-  <div class="col-auto">
+  <div class="col-md-2">
+    <label class="form-label">Тип</label>
+    <select name="type" class="form-select">
+      <option value="">— все —</option>
+      {% for vt in vehicle_types %}
+      <option value="{{ vt.pk }}" {% if current_type == vt.pk|stringformat:"s" %}selected{% endif %}>{{ vt.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <div class="form-check mt-4">
+      <input class="form-check-input" type="checkbox" name="show_deleted" id="showDeleted" value="1" {% if show_deleted %}checked{% endif %}>
+      <label class="form-check-label" for="showDeleted">Показать удалённые</label>
+    </div>
+  </div>
+  <div class="col-md-2">
     <button type="submit" class="btn btn-primary">Применить</button>
-    {% if current_brand %}
     <a href="{% url 'vehicle:vehicle-list' %}" class="btn btn-outline-secondary">Сбросить</a>
-    {% endif %}
   </div>
 </form>
 
@@ -65,12 +81,14 @@
           </td>
           <td class="action-buttons">
             <a href="{% url 'vehicle:vehicle-detail' vehicle.pk %}" class="btn btn-sm btn-outline-primary">Открыть</a>
+            {% if user|in_group:"Администраторы,Механики" %}
             <a href="{% url 'vehicle:vehicle-update' vehicle.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
             {% if not vehicle.is_deleted %}
                 <form method="post" action="{% url 'vehicle:vehicle-delete' vehicle.pk %}" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите удалить {{ vehicle.reg_number }}?');">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                 </form>
+            {% endif %}
             {% endif %}
           </td>
         </tr>
@@ -83,25 +101,25 @@
   </table>
 </div>
 
+{% with filters=""|add:current_brand|add:current_status|add:current_type|add:show_deleted %}
 <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center">
     {% if page_obj.has_previous %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_brand %}&brand={{ current_brand }}{% endif %}">Предыдущая</a>
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if show_deleted %}&show_deleted=1{% endif %}">Предыдущая</a>
       </li>
     {% endif %}
-
     {% for num in page_obj.paginator.page_range %}
       <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-        <a class="page-link" href="?page={{ num }}{% if current_brand %}&brand={{ current_brand }}{% endif %}">{{ num }}</a>
+        <a class="page-link" href="?page={{ num }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if show_deleted %}&show_deleted=1{% endif %}">{{ num }}</a>
       </li>
     {% endfor %}
-
     {% if page_obj.has_next %}
       <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_brand %}&brand={{ current_brand }}{% endif %}">Следующая</a>
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}{% if show_deleted %}&show_deleted=1{% endif %}">Следующая</a>
       </li>
     {% endif %}
   </ul>
 </nav>
+{% endwith %}
 {% endblock %}

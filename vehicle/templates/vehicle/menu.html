@@ -1,3 +1,4 @@
+{% load auth_extras %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -13,9 +14,13 @@
         Техника
       </button>
       <ul class="dropdown-menu">
+        {% if user|in_group:"Администраторы,Механики" %}
         <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-type-create' %}">Создать тип</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-type-list' %}">Список типов</a></li>
+        {% if user|in_group:"Администраторы,Механики" %}
         <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-create' %}">Создать технику</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'vehicle:vehicle-list' %}">Список техники</a></li>
       </ul>
     </div>
@@ -25,9 +30,13 @@
         Запчасти
       </button>
       <ul class="dropdown-menu">
+        {% if user|in_group:"Администраторы,Кладовщики" %}
         <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-type-create' %}">Создать тип</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-type-list' %}">Список типов</a></li>
+        {% if user|in_group:"Администраторы,Кладовщики" %}
         <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-create' %}">Создать запчасть</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'spare_part:spare-part-list' %}">Список запчастей</a></li>
       </ul>
     </div>
@@ -37,10 +46,30 @@
         Атрибуты
       </button>
       <ul class="dropdown-menu">
+        {% if user|in_group:"Администраторы,Кладовщики" %}
         <li><a class="dropdown-item" href="{% url 'spare_part:attribute-create' %}">Создать атрибут</a></li>
+        {% endif %}
         <li><a class="dropdown-item" href="{% url 'spare_part:attribute-list' %}">Список атрибутов</a></li>
       </ul>
     </div>
+    </div>
+
+    {% if user|in_group:"Администраторы,Механики" %}
+    <div class="btn-group ms-2">
+      <a href="{% url 'reports:dashboard' %}" class="btn btn-dark">Дашборд</a>
+    </div>
+    {% endif %}
+
+    <div class="ms-auto d-flex align-items-center">
+      {% if user.is_authenticated %}
+        <span class="me-3 text-muted">{{ user.username }}</span>
+        <form action="{% url 'logout' %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-dark btn-sm">Выйти</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-outline-dark btn-sm">Войти</a>
+      {% endif %}
     </div>
   </div>
 </nav>

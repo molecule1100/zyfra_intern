@@ -1,4 +1,10 @@
+import logging
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
+from intern_project.mixins import GroupRequiredMixin
+
+logger = logging.getLogger('vehicle')
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -9,21 +15,23 @@ from vehicle.models import Vehicle, VehicleType, VehicleImage
 from vehicle.forms import CreateUpdateVehicleTypeForm, CreateUpdateVehicleForm
 
 
-class VehicleTypeCreateView(CreateView):
+class VehicleTypeCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
+    allowed_groups = ['Администраторы', 'Механики']
     model = VehicleType
     form_class = CreateUpdateVehicleTypeForm
     template_name = 'vehicle/vehicletype_form.html'
     success_url = reverse_lazy('vehicle:vehicle-type-list')
 
 
-class VehicleTypeUpdateView(UpdateView):
+class VehicleTypeUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    allowed_groups = ['Администраторы', 'Механики']
     model = VehicleType
     form_class = CreateUpdateVehicleTypeForm
     template_name = 'vehicle/vehicletype_form.html'
     success_url = reverse_lazy('vehicle:vehicle-type-list')
 
 
-class VehicleTypeListView(ListView):
+class VehicleTypeListView(LoginRequiredMixin, ListView):
     model = VehicleType
     paginate_by = 10
     template_name = 'vehicle/vehicletype_list.html'
@@ -34,7 +42,8 @@ class VehicleTypeListView(ListView):
         return context
 
 
-class VehicleTypeDeleteView(View):
+class VehicleTypeDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Механики']
     success_url = reverse_lazy('vehicle:vehicle-type-list')
 
     def post(self, request, pk):
@@ -44,7 +53,8 @@ class VehicleTypeDeleteView(View):
         return HttpResponseRedirect(self.success_url)
 
 
-class VehicleCreateView(CreateView):
+class VehicleCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
+    allowed_groups = ['Администраторы', 'Механики']
     model = Vehicle
     form_class = CreateUpdateVehicleForm
     template_name = 'vehicle/vehicle_form.html'
@@ -64,7 +74,7 @@ class VehicleCreateView(CreateView):
         return context
 
 
-class VehicleDetailView(DetailView):
+class VehicleDetailView(LoginRequiredMixin, DetailView):
     model = Vehicle
     template_name = 'vehicle/vehicle_detail.html'
     success_url = reverse_lazy('vehicle:vehicle-detail')
@@ -73,10 +83,14 @@ class VehicleDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         if self.object:
             context['active_images'] = self.object.images.filter(is_deleted=False)
+            context['installations'] = self.object.installations.select_related(
+                'spare_part', 'installed_by', 'uninstalled_by'
+            )
         return context
 
 
-class VehicleUpdateView(UpdateView):
+class VehicleUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    allowed_groups = ['Администраторы', 'Механики']
     model = Vehicle
     form_class = CreateUpdateVehicleForm
     template_name = 'vehicle/vehicle_form.html'
@@ -108,7 +122,7 @@ class VehicleUpdateView(UpdateView):
             return self.form_invalid(form)
 
 
-class VehicleListView(ListView):
+class VehicleListView(LoginRequiredMixin, ListView):
     model = Vehicle
     paginate_by = 10
     template_name = 'vehicle/vehicle_list.html'
@@ -116,17 +130,39 @@ class VehicleListView(ListView):
 
     def get_queryset(self):
         queryset = Vehicle.objects.all()
+        show_deleted = self.request.GET.get('show_deleted')
+        if not show_deleted:
+            queryset = queryset.filter(is_deleted=False)
         brand = self.request.GET.get('brand')
         if brand:
             queryset = queryset.filter(brand__icontains=brand)
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(operation_status=status)
+        vehicle_type = self.request.GET.get('type')
+        if vehicle_type:
+            queryset = queryset.filter(type__id=vehicle_type)
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from vehicle.models import VehicleType
+        context['current_brand'] = self.request.GET.get('brand', '')
+        context['current_status'] = self.request.GET.get('status', '')
+        context['current_type'] = self.request.GET.get('type', '')
+        context['show_deleted'] = self.request.GET.get('show_deleted', '')
+        context['vehicle_types'] = VehicleType.objects.filter(is_deleted=False)
+        context['status_choices'] = Vehicle.OperationStatusChoices.choices
+        return context
 
-class VehicleDeleteView(View):
+
+class VehicleDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Механики']
     success_url = reverse_lazy('vehicle:vehicle-list')
 
     def post(self, request, pk):
         vehicle = Vehicle.objects.get(pk=pk)
         vehicle.is_deleted = True
         vehicle.save()
+        logger.info(f'Техника {vehicle} удалена пользователем {request.user}')
         return HttpResponseRedirect(self.success_url)

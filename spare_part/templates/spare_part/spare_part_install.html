@@ -1,0 +1,28 @@
+{% extends "vehicle/base.html" %}
+
+{% block title %}Установить запчасть{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <h2 class="mb-4">Установить запчасть: {{ spare_part }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Техника</label>
+            <select name="vehicle" class="form-select" required>
+                <option value="">— выберите технику —</option>
+                {% for v in vehicles %}
+                <option value="{{ v.pk }}">{{ v }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Примечание</label>
+            <textarea name="notes" class="form-control" rows="2"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Установить</button>
+        <a href="{% url 'spare_part:spare-part-detail' spare_part.pk %}" class="btn btn-outline-secondary ms-2">Отмена</a>
+    </form>
+</div>
+{% endblock %}

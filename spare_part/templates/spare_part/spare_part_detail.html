@@ -1,5 +1,5 @@
 {% extends "vehicle/base.html" %}
-{% load thumbnail %}
+{% load thumbnail auth_extras %}
 
 {% block title %}Запчасть{% endblock %}
 
@@ -60,6 +60,51 @@
         </div>
         {% else %}
             <p class="text-muted">Фотографий пока нет</p>
+        {% endif %}
+    </div>
+
+    {% if user|in_group:"Администраторы,Механики" %}
+    <div class="mb-4">
+        {% if not object.vehicle %}
+        <a href="{% url 'spare_part:spare-part-install' object.pk %}" class="btn btn-success">Установить</a>
+        {% else %}
+        <form method="post" action="{% url 'spare_part:spare-part-uninstall' object.pk %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning" onclick="return confirm('Снять запчасть?');">Снять</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="mb-4">
+        <h5 class="mb-3">История установок</h5>
+        {% if installations %}
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Техника</th>
+                    <th>Установил</th>
+                    <th>Дата установки</th>
+                    <th>Снял</th>
+                    <th>Дата снятия</th>
+                    <th>Примечание</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inst in installations %}
+                <tr>
+                    <td>{{ inst.vehicle }}</td>
+                    <td>{{ inst.installed_by }}</td>
+                    <td>{{ inst.installed_at|date:"d.m.Y H:i" }}</td>
+                    <td>{{ inst.uninstalled_by|default:"—" }}</td>
+                    <td>{{ inst.uninstalled_at|date:"d.m.Y H:i"|default:"—" }}</td>
+                    <td>{{ inst.notes|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">История установок пуста</p>
         {% endif %}
     </div>
 </div>

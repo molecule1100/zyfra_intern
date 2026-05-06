@@ -1,8 +1,9 @@
 from django.urls import path
-from spare_part.views import SparePartTypeCreateView, SparePartTypeUpdateView, SparePartTypeListView, \
-    SparePartTypeDeleteView, SparePartCreateView, SparePartDetailView, SparePartUpdateView, SparePartListView, \
-    SparePartDeleteView, AttributeCreateView, AttributeUpdateView, AttributeListView, AttributeDetailView, \
-    AttributeDeleteView
+from spare_part.views import (SparePartTypeCreateView, SparePartTypeUpdateView, SparePartTypeListView,
+                               SparePartTypeDeleteView, SparePartCreateView, SparePartDetailView,
+                               SparePartUpdateView, SparePartListView, SparePartDeleteView,
+                               AttributeCreateView, AttributeUpdateView, AttributeListView, AttributeDetailView,
+                               AttributeDeleteView, SparePartInstallView, SparePartUninstallView)
 
 urlpatterns = [
     path('spare-part-types/create/', SparePartTypeCreateView.as_view(), name="spare-part-type-create"),
@@ -14,6 +15,8 @@ urlpatterns = [
     path('spare-parts/<int:pk>/edit/', SparePartUpdateView.as_view(), name="spare-part-update"),
     path('spare-parts/', SparePartListView.as_view(), name="spare-part-list"),
     path('spare-parts/<int:pk>/delete/', SparePartDeleteView.as_view(), name="spare-part-delete"),
+    path('spare-parts/<int:pk>/install/', SparePartInstallView.as_view(), name="spare-part-install"),
+    path('spare-parts/<int:pk>/uninstall/', SparePartUninstallView.as_view(), name="spare-part-uninstall"),
     path('attribute/create/', AttributeCreateView.as_view(), name="attribute-create"),
     path('attribute/<int:pk>/edit/', AttributeUpdateView.as_view(), name="attribute-update"),
     path('attribute/', AttributeListView.as_view(), name="attribute-list"),

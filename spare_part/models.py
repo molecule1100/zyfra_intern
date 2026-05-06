@@ -64,6 +64,19 @@ class SparePartTypeAttribute(models.Model):
         unique_together = ('spare_part_type', 'attribute')
 
 
+class SparePartInstallation(models.Model):
+    spare_part = models.ForeignKey(SparePart, on_delete=models.CASCADE, related_name='installations')
+    vehicle = models.ForeignKey('vehicle.Vehicle', on_delete=models.CASCADE, related_name='installations')
+    installed_at = models.DateTimeField(auto_now_add=True)
+    installed_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, related_name='installations_made')
+    uninstalled_at = models.DateTimeField(null=True, blank=True)
+    uninstalled_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='uninstallations_made')
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['-installed_at']
+
+
 class AttributeValue(models.Model):
     spare_part = models.ForeignKey(SparePart, on_delete=models.CASCADE, related_name='attribute_values')
     attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)

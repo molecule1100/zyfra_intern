@@ -68,22 +68,34 @@
 
   <hr class="my-4">
 
-  <h3>Запчасти</h3>
+  <h3>История установок запчастей</h3>
   <div class="table-responsive parts-table">
     <table class="table table-hover">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Тип</th>
-          <th>Статус</th>
+          <th>Запчасть</th>
+          <th>Установил</th>
           <th>Дата установки</th>
-          <th>Действия</th>
+          <th>Снял</th>
+          <th>Дата снятия</th>
+          <th>Примечание</th>
         </tr>
       </thead>
       <tbody>
+        {% for inst in installations %}
         <tr>
-          <td colspan="5" class="text-center">Нет данных о запчастях</td>
+          <td><a href="{% url 'spare_part:spare-part-detail' inst.spare_part.pk %}">{{ inst.spare_part }}</a></td>
+          <td>{{ inst.installed_by }}</td>
+          <td>{{ inst.installed_at|date:"d.m.Y H:i" }}</td>
+          <td>{{ inst.uninstalled_by|default:"—" }}</td>
+          <td>{{ inst.uninstalled_at|date:"d.m.Y H:i"|default:"—" }}</td>
+          <td>{{ inst.notes|default:"—" }}</td>
         </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center">Нет данных об установках</td>
+        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

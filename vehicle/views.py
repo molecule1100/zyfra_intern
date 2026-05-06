@@ -79,6 +79,9 @@ class VehicleDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         if self.object:
             context['active_images'] = self.object.images.filter(is_deleted=False)
+            context['installations'] = self.object.installations.select_related(
+                'spare_part', 'installed_by', 'uninstalled_by'
+            )
         return context
 
 

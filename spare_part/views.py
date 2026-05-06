@@ -7,9 +7,16 @@ from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView
 
-from spare_part.models import SparePart, SparePartType, SparePartImage, Attribute, AttributeValue, SparePartTypeAttribute
+import logging
+from django.db import transaction
+from django.utils import timezone
+
+from spare_part.models import (SparePart, SparePartType, SparePartImage, Attribute, AttributeValue,
+                                SparePartTypeAttribute, SparePartInstallation)
 from spare_part.forms import (CreateUpdateSparePartTypeForm, CreateUpdateSparePartForm,
                                CreateUpdateAttributeForm, SparePartTypeAttributeFormSet, AttributeValueForm)
+
+logger = logging.getLogger('spare_part')
 
 
 class SparePartTypeCreateView(LoginRequiredMixin, GroupRequiredMixin, CreateView):
@@ -115,6 +122,7 @@ class SparePartDetailView(LoginRequiredMixin, DetailView):
         if self.object:
             context['active_images'] = self.object.images.filter(is_deleted=False)
             context['attribute_values'] = self.object.attribute_values.filter(is_deleted=False).select_related('attribute')
+            context['installations'] = self.object.installations.select_related('vehicle', 'installed_by', 'uninstalled_by')
         return context
 
 
@@ -162,7 +170,6 @@ class SparePartUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
             images = request.FILES.getlist('images')
             for image_file in images:
                 SparePartImage.objects.create(spare_part=self.object, file=image_file)
-            # Save attribute values
             if self.object.spare_part_type:
                 type_attributes = self.object.spare_part_type.type_attributes.filter(
                     is_deleted=False
@@ -181,8 +188,7 @@ class SparePartUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
                         av.attribute = ta.attribute
                         av.save()
             return response
-        else:
-            return self.form_invalid(form)
+        return self.form_invalid(form)
 
 
 class SparePartListView(LoginRequiredMixin, ListView):
@@ -245,3 +251,56 @@ class AttributeDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
         attribute.is_deleted = True
         attribute.save()
         return HttpResponseRedirect(self.success_url)
+
+
+class SparePartInstallView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Механики']
+
+    def get(self, request, pk):
+        from django.shortcuts import get_object_or_404, render
+        from vehicle.models import Vehicle
+        spare_part = get_object_or_404(SparePart, pk=pk)
+        vehicles = Vehicle.objects.filter(is_deleted=False)
+        return render(request, 'spare_part/spare_part_install.html', {
+            'spare_part': spare_part,
+            'vehicles': vehicles,
+        })
+
+    def post(self, request, pk):
+        from django.shortcuts import get_object_or_404
+        from vehicle.models import Vehicle
+        spare_part = get_object_or_404(SparePart, pk=pk)
+        vehicle_id = request.POST.get('vehicle')
+        notes = request.POST.get('notes', '')
+        with transaction.atomic():
+            vehicle = Vehicle.objects.get(pk=vehicle_id)
+            SparePartInstallation.objects.create(
+                spare_part=spare_part,
+                vehicle=vehicle,
+                installed_by=request.user,
+                notes=notes,
+            )
+            spare_part.vehicle = vehicle
+            spare_part.status = SparePart.StatusChoices.IN_USE
+            spare_part.save()
+        logger.info(f'Запчасть {spare_part} установлена на {vehicle} пользователем {request.user}')
+        return redirect('spare_part:spare-part-detail', pk=spare_part.pk)
+
+
+class SparePartUninstallView(LoginRequiredMixin, GroupRequiredMixin, View):
+    allowed_groups = ['Администраторы', 'Механики']
+
+    def post(self, request, pk):
+        from django.shortcuts import get_object_or_404
+        spare_part = get_object_or_404(SparePart, pk=pk)
+        with transaction.atomic():
+            active = spare_part.installations.filter(uninstalled_at__isnull=True).first()
+            if active:
+                active.uninstalled_at = timezone.now()
+                active.uninstalled_by = request.user
+                active.save()
+            spare_part.vehicle = None
+            spare_part.status = SparePart.StatusChoices.IN_STOCK
+            spare_part.save()
+        logger.info(f'Запчасть {spare_part} снята пользователем {request.user}')
+        return redirect('spare_part:spare-part-detail', pk=spare_part.pk)

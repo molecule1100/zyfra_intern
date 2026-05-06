@@ -197,6 +197,36 @@ class SparePartListView(LoginRequiredMixin, ListView):
     template_name = 'spare_part/spare_part_list.html'
     success_url = reverse_lazy('spare_part:spare-part-list')
 
+    def get_queryset(self):
+        queryset = SparePart.objects.all()
+        show_deleted = self.request.GET.get('show_deleted')
+        if not show_deleted:
+            queryset = queryset.filter(is_deleted=False)
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        spare_part_type = self.request.GET.get('type')
+        if spare_part_type:
+            queryset = queryset.filter(spare_part_type__id=spare_part_type)
+        vehicle_search = self.request.GET.get('vehicle')
+        if vehicle_search:
+            queryset = queryset.filter(
+                vehicle__reg_number__icontains=vehicle_search
+            ) | queryset.filter(
+                vehicle__brand__icontains=vehicle_search
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_status'] = self.request.GET.get('status', '')
+        context['current_type'] = self.request.GET.get('type', '')
+        context['current_vehicle'] = self.request.GET.get('vehicle', '')
+        context['show_deleted'] = self.request.GET.get('show_deleted', '')
+        context['spare_part_types'] = SparePartType.objects.filter(is_deleted=False)
+        context['status_choices'] = SparePart.StatusChoices.choices
+        return context
+
 
 class SparePartDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):
     allowed_groups = ['Администраторы', 'Кладовщики']

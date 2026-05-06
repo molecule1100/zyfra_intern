@@ -126,10 +126,30 @@ class VehicleListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = Vehicle.objects.all()
+        show_deleted = self.request.GET.get('show_deleted')
+        if not show_deleted:
+            queryset = queryset.filter(is_deleted=False)
         brand = self.request.GET.get('brand')
         if brand:
             queryset = queryset.filter(brand__icontains=brand)
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(operation_status=status)
+        vehicle_type = self.request.GET.get('type')
+        if vehicle_type:
+            queryset = queryset.filter(type__id=vehicle_type)
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from vehicle.models import VehicleType
+        context['current_brand'] = self.request.GET.get('brand', '')
+        context['current_status'] = self.request.GET.get('status', '')
+        context['current_type'] = self.request.GET.get('type', '')
+        context['show_deleted'] = self.request.GET.get('show_deleted', '')
+        context['vehicle_types'] = VehicleType.objects.filter(is_deleted=False)
+        context['status_choices'] = Vehicle.OperationStatusChoices.choices
+        return context
 
 
 class VehicleDeleteView(LoginRequiredMixin, GroupRequiredMixin, View):

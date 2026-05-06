@@ -26,6 +26,7 @@ urlpatterns = [
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('vehicle/', include(('vehicle.urls', 'vehicle'), namespace='vehicle')),
     path('spare_part/', include(('spare_part.urls', 'spare_part'), namespace='spare_part')),
+    path('reports/', include(('reports.urls', 'reports'), namespace='reports')),
 ]
 
 if settings.DEBUG:

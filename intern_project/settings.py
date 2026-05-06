@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'vehicle',
     'spare_part',
+    'reports',
 ]
 
 MIDDLEWARE = [

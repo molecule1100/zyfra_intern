@@ -8,13 +8,21 @@ on:
 
 jobs:
   build:
-
+    env:
+      POSTGRES_DB: zyfra_db
+      POSTGRES_USER: zyfra_user
+      POSTGRES_PASSWORD: zyfra_password
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      SECRET_KEY: "12345"
+      ALLOWED_HOSTS: localhost
+      
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
         python-version: [3.13]
-
+    
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -28,3 +36,18 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: zyfra_db
+          POSTGRES_USER: zyfra_user
+          POSTGRES_PASSWORD: zyfra_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432

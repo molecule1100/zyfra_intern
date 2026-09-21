@@ -16,6 +16,7 @@ jobs:
       POSTGRES_PORT: "5432"
       SECRET_KEY: "12345"
       ALLOWED_HOSTS: localhost
+      DEBUG: "True"
       
     runs-on: ubuntu-latest
     strategy:

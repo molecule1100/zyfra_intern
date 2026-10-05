@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: [ "improvements" ]
+    branches: [ "improvements", "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -23,7 +23,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.13]
-    
+  
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -37,7 +37,7 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
-
+      
     services:
       postgres:
         image: postgres:17
@@ -52,3 +52,10 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t zyfra:ci .

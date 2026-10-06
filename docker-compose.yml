@@ -1,8 +1,6 @@
 services:
   zyfra:
-    image: zyfra_intern
-    build:
-      context: ./
+    image: ghcr.io/molecule1100/zyfra:ci
     restart: unless-stopped
     env_file:
       - .env
@@ -10,7 +8,6 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - .:/app
       - staticfiles:/app/staticfiles
       - media:/app/media
     command: >

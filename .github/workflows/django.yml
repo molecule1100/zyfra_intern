@@ -56,6 +56,22 @@ jobs:
   docker:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
+      -
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/checkout@v7
-      - run: docker build -t zyfra:ci .
+      - run:
+          docker build -t ghcr.io/molecule1100/zyfra:ci .
+      - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run:
+          docker push ghcr.io/molecule1100/zyfra:ci

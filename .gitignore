@@ -12,3 +12,5 @@ pyvenv.cfg
 .idea/
 
 .env
+
+nginx/certs/
